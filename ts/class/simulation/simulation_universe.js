@@ -438,9 +438,12 @@ export class Simulation_universe extends Simulation {
      * @returns
      */
     function_E(x, omegam0, omegalambda0, Or) {
+        let w0 = this.dark_energy.w_0;
+        let w1 = this.dark_energy.w_1;
+        let Yde = Math.exp(-3 * (w1 + w0 + 1) * Math.log(1 / (1 + x)) - (3 * w1 * (1 - (1 / (1 + x)))));
         return (Number(Or) * Math.pow((1 + x), 4) + Number(omegam0) * Math.pow((1 + x), 3)
             + (1 - Number(omegam0) - Number(Or) - Number(omegalambda0)) * Math.pow((1 + x), 2)
-            + Number(omegalambda0));
+            + Number(omegalambda0) * Yde);
     }
     /**
      * calculates the temperature as a function of the shift z
