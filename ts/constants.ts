@@ -2,7 +2,7 @@
 export const c: number = 2.99792458e8;        // Light constant
 export const k: number = 1.38064852e-23;      // Boltzmann constant
 export const h: number = 6.62607004e-34;      // Planck constant
-export const G: number = 6.67430e-11;         // Newton constant : Système international 2018
+export const G: number = 6.67385e-11;         // Newton constant : Système international 2018
 
 
 // Distances
