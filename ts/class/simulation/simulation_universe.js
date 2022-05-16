@@ -21,6 +21,7 @@ import { TypeAnnee, c, k, h, G, AU, parsec, k_parsec, M_parsec, ly } from "./../
  * @method modify_constants
  * @method meter_to_light_year
  * @method meter_to_parsec
+ * @method parsec_to_meters
  * @method seconds_to_years
  * @method runge_kutta_universe_1
  * @method runge_kutta_universe_2
@@ -45,7 +46,11 @@ import { TypeAnnee, c, k, h, G, AU, parsec, k_parsec, M_parsec, ly } from "./../
  * @method time
  * @method universe_age
  * @method duration
+ * @method delta_dm
  * @method metric_distance
+ * @method theta
+ * @method theta_kpc
+ * @method D
  * @method luminosity
  * @method luminosity_distance
  * @method light_distance
@@ -223,6 +228,14 @@ export class Simulation_universe extends Simulation {
         let astro_unit = 149597870700; //value of an astronmical unit in meters
         let pc = astro_unit * 648000 / Math.PI; //value of 1 parsec
         return Number(l) / pc;
+    }
+    /**
+*Converts a length in parsec to a lenght in meters
+    */
+    parsec_to_meters(l) {
+        let astro_unit = 149597870700; //value of an astronmical unit in meters
+        let pc = astro_unit * 648000 / Math.PI; //value of 1 parsec in meters
+        return Number(l) * pc;
     }
     /**
      * Convert a duration in seconds to a duration in years
@@ -600,14 +613,15 @@ export class Simulation_universe extends Simulation {
         return duration;
     }
     /**
-     * Compute the distance between us and an object at a cosmologic redshit z
-     * @param z cosmologic shift
-     * @returns the distance
+     * Compute the distance between two cosmologics shift z
+     * @param z_1 the closest cosmologic shift from ours (z = 0)
+     * @param z_2 the farest cosmologic shift from ours (z = 0)
+     * @returns error if z_1 or z_2 < -1, duration if both value are accepted.
      */
-    metric_distance(z) {
+    delta_dm(z1, z2) {
         let distance;
         let curvature = this.calcul_omega_k();
-        distance = this.simpson(this, this.integral_distance, 0, z, 100);
+        distance = this.simpson(this, this.integral_distance, Number(z1), Number(z2), 100000);
         if (curvature < 0) {
             distance =
                 Math.sinh(Math.sqrt(Math.abs(curvature)) * distance) /
@@ -622,6 +636,69 @@ export class Simulation_universe extends Simulation {
         return distance;
     }
     /**
+     * Compute the distance between us and an object at a cosmologic redshit z
+     * @param z cosmologic shift
+     * @returns the distance
+     */
+    metric_distance(z) {
+        let distance = this.delta_dm(0, z);
+        if (Number(distance) <= 1e30) {
+            return distance;
+        }
+        else {
+            throw new Error(" Erreur de calcul");
+        }
+    }
+    /**
+     * Computes the value of theta in second of arc
+     * @param  D
+     * @param  z Cosmologic shift
+     * @param dm Metric distance
+     * @returns theta
+     */
+    theta(D, z, dm) {
+        let distance;
+        if (dm === undefined) {
+            distance = Number(this.metric_distance(z));
+        }
+        else {
+            distance = Number(dm);
+        }
+        let add = this.angular_diameter_distance(z, distance);
+        return 206265 * Number(D) / add;
+    }
+    /**
+ * Computes the value of theta in second of arc if D is in kiloparsec
+ * @param  D
+ * @param  z Cosmologic shift
+ * @param dm Metric distance
+ * @returns theta
+ */
+    theta_kpc(D, z, dm) {
+        let D_m = this.parsec_to_meters((D / 1000));
+        return this.theta(D_m, z, dm);
+    }
+    /**
+    * Computes the value of D in meters and in parsec
+    * @param  theta (in seconds of arcs)
+    * @param  z Cosmologic shift
+    * @param dm Metric distance
+    * @returns D
+    */
+    D(theta, z, dm) {
+        let distance;
+        if (dm === undefined) {
+            distance = Number(this.metric_distance(z));
+        }
+        else {
+            distance = Number(dm);
+        }
+        let add = this.angular_diameter_distance(z, distance);
+        let D_meters = add * Number(theta) / 206265;
+        let D_kpc = 1000 * this.meter_to_parsec(D_meters);
+        return { "m": D_meters, "kpc": D_kpc };
+    }
+    /**
      * Compute the luminosity distance
      * @param z Cosmologic shift
      * @param distance_metric optionnal parameters for optimisation (permit you to pass an already calculated distances for optimisation)
@@ -630,7 +707,7 @@ export class Simulation_universe extends Simulation {
     luminosity_distance(z, distance_metric) {
         let distance;
         if (distance_metric === undefined) {
-            distance = this.metric_distance(z);
+            distance = Number(this.metric_distance(z));
         }
         else {
             distance = distance_metric;
@@ -647,7 +724,7 @@ export class Simulation_universe extends Simulation {
     angular_diameter_distance(z, distance_metric) {
         let distance;
         if (distance_metric === undefined) {
-            distance = this.metric_distance(z);
+            distance = Number(this.metric_distance(z));
         }
         else {
             distance = distance_metric;
@@ -681,7 +758,7 @@ export class Simulation_universe extends Simulation {
     brightness(z, luminosity, distance_metric) {
         let distance;
         if (distance_metric === undefined) {
-            distance = this.metric_distance(z);
+            distance = Number(this.metric_distance(z));
         }
         else {
             distance = distance_metric;
@@ -698,7 +775,7 @@ export class Simulation_universe extends Simulation {
     apparent_diameter(D_e, z, distance_metric) {
         let distance;
         if (distance_metric === undefined) {
-            distance = this.metric_distance(z);
+            distance = Number(this.metric_distance(z));
         }
         else {
             distance = distance_metric;
