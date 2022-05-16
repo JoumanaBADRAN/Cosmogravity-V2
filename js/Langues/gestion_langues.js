@@ -1,8 +1,8 @@
 const PATH_JSON_FR = "./js/Langues/fr.json";
 const PATH_JSON_EN = "./js/Langues/en.json";
 
-const PATH_UNIV_THEORIE_FR = "./theorie/20220127-CG-TH.pdf";
-const PATH_UNIV_THEORIE_EN = "./theorie/20220127-CG-TH-EN.pdf";
+const PATH_UNIV_THEORIE_FR = "./theorie/CG-TH.pdf";
+const PATH_UNIV_THEORIE_EN = "./theorie/CG-TH-EN.pdf";
 
 const PATH_TRAJ_THEO_FR = "./theorie/theorie_trajectoires_FR.pdf";
 const PATH_TRAJ_THEO_EN = "./theorie/theorie_trajectoires_EN.pdf ";
