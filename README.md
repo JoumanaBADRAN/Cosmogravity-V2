@@ -1,13 +1,6 @@
-# Cosmogravity-V2
-Same application, new architecture
-See V1 code [here](https://github.com/Migoyan/Cosmogravity_2021)
+# Cosmogravity project
+## The 2021 Version
+######
+Cosmogravity is a project from the Laboratoire Univers et Particules de Montpellier (LUPM) France, under the responsability of Jean-Pierre CORDONI, Isabelle MOUGENOT, Henri REBOUL, David CASSAGNE and Brahim GUIZAL. This program is developped within the tutered projects of the Digital physics Master at the University of Montpellier.
 
-
-## Instructions :
-1. Compile ts directory into js directory. /!\ The code created is for node usage and cannot be used directly in navigators hence the next steps /!\\.
-1. For each file, delete lines containing keywords like import and delete export before each classes.
-1. Code is good to be called in your html page.
-
-This is the most satisfying solution so far we have founded with the time given to us. Moduls like browserify and webpage might give a better solution.
-
-On your server, you can delete ts to gain space.
+Find more on the [LUPM internet site](https://www.lupm.in2p3.fr/en/teaching/cosmogravity/) and try this application [here](https://www.lupm.in2p3.fr/cosmogravity/)
