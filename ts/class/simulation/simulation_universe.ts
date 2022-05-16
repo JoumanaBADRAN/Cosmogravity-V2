@@ -812,34 +812,9 @@ public delta_dm(z1,z2) {
 	 * @param z cosmologic shift
 	 * @returns the distance
 	 */
-<<<<<<< HEAD
-	public metric_distance(z: number): number {
-		let distance: number;
-		let curvature: number = this.calcul_omega_k();
-		distance = this.simpson(this, this.integral_distance, 0, z, 100);
-		if (curvature < 0) {
-			distance =
-				Math.sinh(Math.sqrt(Math.abs(curvature)) * distance) /
-				Math.sqrt(Math.abs(curvature));
-		} else if (curvature > 0) {
-			distance =
-				Math.sin(Math.sqrt(Math.abs(curvature)) * distance) /
-				Math.sqrt(Math.abs(curvature));
-		}
-		distance *= this.constants.c / this._H0parsec;
-		
-		
-=======
 public metric_distance(z){
 	let distance = this.delta_dm(0,z);
-	if (Number(distance) <= 1e30) {
->>>>>>> c8f65cecfeb4386540b871d3e6df7452cece05d9
 		return distance;
-	}
-	else {
-		throw new Error(" Erreur de calcul");
-	} 
-
 }
 
 /**

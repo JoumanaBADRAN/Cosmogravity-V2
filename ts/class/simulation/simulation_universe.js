@@ -642,12 +642,7 @@ export class Simulation_universe extends Simulation {
      */
     metric_distance(z) {
         let distance = this.delta_dm(0, z);
-        if (Number(distance) <= 1e30) {
-            return distance;
-        }
-        else {
-            throw new Error(" Erreur de calcul");
-        }
+        return distance;
     }
     /**
      * Computes the value of theta in second of arc
