@@ -541,6 +541,11 @@ function trajectoire(compteur,mobile) {
 
 		var blyo = Number(document.getElementById("nombredefusees").value);
 
+		//joystick
+		element2=document.getElementById('traject_type2');
+		if(blyo == 1 && element2.value == "mobile") { 	
+			document.getElementById("joyDiv").style.visibility='visible'; }
+
 		for (countt = 1; countt <= blyo; countt += 1) {
 			document.getElementById('r0'+countt.toString()+'').disabled = true;
 			document.getElementById('phi0'+countt.toString()+'').disabled = true;
@@ -695,6 +700,30 @@ function trajectoire(compteur,mobile) {
     document.getElementById('bouton_pause').addEventListener('click', function() {
     	pausee(compteur,mobile,mobilefactor);
     }, false);
+
+	if(blyo == 1) {
+	setInterval(function(){
+		if(joy.GetY()<0){
+			Delta_L=-joy.GetY()/1e4*mobile.L; //console.log("835 mobile.L mobile.r_part",mobile.L,mobile.r_part);
+		 	mobile.L=mobile.L+Delta_L ;
+			Delta_E=(1-rs/mobile.r_part)*mobile.L*Delta_L/mobile.E/Math.pow(mobile.r_part,2);
+			mobile.E=mobile.E+Delta_E; 
+			deltam_sur_m = deltam_sur_m + Math.abs(Delta_E/mobile.E);
+			document.getElementById("E"+compteur.toString()).innerHTML = mobile.E.toExponential(10);
+			document.getElementById("L"+compteur.toString()).innerHTML = mobile.L.toExponential(10);
+		}
+		
+		else if(joy.GetY()>0){
+			Delta_L=-joy.GetY()/1e4*mobile.L;
+			mobile.L=mobile.L+Delta_L ;
+			Delta_E=(1-rs/mobile.r_part)*mobile.L*Delta_L/mobile.E/Math.pow(mobile.r_part,2) ;
+			mobile.E=mobile.E+Delta_E; 
+			deltam_sur_m = deltam_sur_m + Math.abs(Delta_E/mobile.E);
+			document.getElementById("E"+compteur.toString()).innerHTML = mobile.E.toExponential(10);
+			document.getElementById("L"+compteur.toString()).innerHTML = mobile.L.toExponential(10);
+		}
+		}, 50); }
+		
 
 //Gestion des bouttons accélerer et decélerer voir bouttons.js*
 
