@@ -5,6 +5,7 @@ export const h: number = 6.62607004e-34;      // Planck constant
 export const G: number = 6.67385e-11;         // Newton constant : Système international 2018
 
 
+
 // Distances
 export const AU: number = 1.495978707e11;      // Astronomical unit in meters
 export const parsec: number = 3.0857e16;       // Parsec in meters

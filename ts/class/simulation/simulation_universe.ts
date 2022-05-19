@@ -16,6 +16,12 @@ import {TypeAnnee,c,k,h,G,AU,parsec,k_parsec,M_parsec,ly} from "./../../constant
  * @param has_cmb : Has Cosmic Microwave Background (CMB).
  * @param has_neutrino : self explanatory.
  * @param is_flat : Forcing the curvature density parameter to 0.
+ * @param is_single_matter : we use the single-fluid model with the matter dentity parameter equals to 1
+ * @param is_single_cosmo : we use the single-fluid model with the dark energy density parameter equals to 1
+ * @param is_single_radiation : we use the single-fluid model with the radiation dentity parameter equals to 1
+ * @param is_single_radiation : we use the single-fluid model with the curvature dentity parameter equals to 1
+
+
  *
  * methods names :
  * @method modify_dark_energy
@@ -73,6 +79,10 @@ export class Simulation_universe extends Simulation {
 		w_0: -1,
 		w_1: 0,
 	};
+private is_single_matter:boolean;
+private is_single_cosmo:boolean;
+private is_single_radiation:boolean;
+private is_single_curvature:boolean;
 
 
 	private _constants = {
@@ -109,6 +119,10 @@ export class Simulation_universe extends Simulation {
 		this._has_cmb = has_cmb;
 		this._has_neutrino = has_neutrino;
 		this._is_flat = is_flat;
+		this.is_single_cosmo=false;
+		this.is_single_curvature=false;
+		this.is_single_matter=false;
+		this.is_single_radiation=false;
 	}
 
 	//--------------------------Accessors------------------------
@@ -193,6 +207,67 @@ export class Simulation_universe extends Simulation {
 		this.check_sum_omegas();
 	}
 
+	public get _is_single_matter(): boolean {
+		return this._is_single_matter;
+	}
+
+	public get _is_single_cosmo(): boolean {
+		return this._is_single_cosmo;
+	}	
+	
+	public get _is_single_curvature(): boolean {
+		return this._is_single_curvature;
+
+	}	public get _is_single_radiation(): boolean {
+		return this._is_single_radiation;
+	}
+
+	
+
+
+		//modifies the simulation if we use a single fluid model. Replaces setters for is_single_matter,
+		//is_single_cosmo_cst, is_single_radiation and is_single_curvature
+		public single_fluid(model : string){
+			let w0=this.dark_energy.w_0;
+			let w1=this.dark_energy.w_1;
+			let T=0;
+			let omega_r=0;
+			let omega_m=0;
+			let omega_lambda=0;
+			if (model == "matter") {
+				omega_m=1;
+				this.is_single_matter=true;
+			}
+			if (model == "cosmo_cst"){
+				omega_lambda=1;
+				this.is_single_cosmo=true;
+			}
+			if (model == "radiation"){
+				this.is_single_radiation=true;
+				omega_r=1;
+				let c=this.constants.c;
+				let h=this.constants.h;
+				let pi=Math.PI;
+				let G=this.constants.G;
+				let k = this.constants.k;
+				let H=this._H0parsec;
+				T = Math.pow( 45*Math.pow(c,5)*Math.pow(h,3)/(64*Math.pow(pi,6)*G*Math.pow(k,4)),1/4)*Math.pow(H,1/2);
+				let A=45*Math.pow(c,2)*Math.pow(h,3);
+				let B=64*Math.pow(pi,6)*G*Math.pow(k,4);
+				T=Math.pow(A/B,1/4)*Math.pow(H,1/2);
+			}
+			if (model == "curvature"){
+				this.is_single_curvature=true;
+			}
+			this.matter_parameter=omega_m;
+			this.modify_dark_energy(omega_lambda,w0,w1);
+			this.calcul_omega_r();
+			this.temperature=T;
+			this.calcul_omega_k();
+			this.check_sum_omegas();
+		}
+
+	
 	//---------------------------methods-------------------------
 	//                      redefined methods
 
@@ -267,29 +342,46 @@ export class Simulation_universe extends Simulation {
 
 	/**
 	 * Converts a length in meters to a lenght in light years
+	 * @param l : length in meters
 	 */
 
 	public meter_to_light_year(l){
-		return Number(l)/9460730472580800;
+		return Number(l)/this.constants.ly;
 	}
 
 		/**
 	 * Converts a length in meters to a lenght in parsec
+	 * @param l : length in meters
 	 */
 	 public meter_to_parsec(l){
-		let astro_unit = 149597870700; //value of an astronmical unit in meters
-		let pc = astro_unit*648000/Math.PI; //value of 1 parsec
-		return Number(l)/pc;
+		return Number(l)/this.constants.parsec;
+	}
+
+	/**
+	 * Converts a length in meters to a lenght in kiloparsec
+	 * @param l : length in meters
+	 */
+	public meter_to_kiloparsec(l){
+		return Number(l)/this.constants.k_parsec;
+
 	}
 
 	/**
 *Converts a length in parsec to a lenght in meters
+@param l : length in parsec
     */
 
 parsec_to_meters(l) {
-	let astro_unit = 149597870700; //value of an astronmical unit in meters
-	let pc = astro_unit * 648000 / Math.PI; //value of 1 parsec in meters
-	return Number(l) * pc;
+	return Number(l) * this.constants.parsec;
+}
+
+	/**
+*Converts a length in kiloparsec to a lenght in meters
+@param l : length in parsec
+    */
+
+kiloparsec_to_meters(l) {
+	return Number(l) * this.constants.k_parsec;
 }
 
 /**
@@ -455,22 +547,27 @@ parsec_to_meters(l) {
 	/**
 	 * compute radiation density parameter at current time
 	 * @returns the radiation density parameter
+	 * 
+	 * 		if (universe_age === undefined) {
+			age = this.universe_age();
 	 */
-	 public calcul_omega_r(): number {
+	 public calcul_omega_r(omega ? : number): number {
 
 
 		// Hubble-Lemaître constant in international system units (Système International)
 		let omega_r: number =
 			(8 * Math.PI * this.constants.G * this.calcul_rho_r()) / (3 * Math.pow(this._H0parsec, 2));
-
 		if (this.has_neutrino) {
 			omega_r *= 1.68;
 		}
-		if (!this.has_cmb) {
+		if (this.is_single_radiation==true){
+			omega_r=1;	
+		}
+		if (!this.has_cmb || this.is_single_cosmo || this.is_single_curvature || this.is_single_matter) {
 			omega_r = 0;
 		}
-
 		return omega_r;
+
 	}
 
 
@@ -739,33 +836,54 @@ parsec_to_meters(l) {
 		);
 	}
 
-	/**
-	 * Compute the current universe's age
-	 * @returns the current age of the universe in seconds
-	 */
-	public universe_age(): number {
-		/*
-		To compute the age of the universe we need to integrate from x = 0 to x -> infinity. To resolve this problem we do a substitution with
-		x = y / (1 - y) which implies dx = dy / (1 - y)². This result with an integral from y = 0 to y = 1 that can be digitally resolved.
-		*/
-		let age: number;
-		age =
-			this.simpson(this, this.integral_duration_substituated, 0, 1, 10000) /
-			this._H0parsec;
-		return age;
+
+	public universe_age():number {
+        /*
+        To compute the age of the universe we need to integrate from x = 0 to x -> infinity. To resolve this problem we do a substitution with
+        x = y / (1 - y) which implies dx = dy / (1 - y)². This result with an integral from y = 0 to y = 1 that can be digitally resolved.
+        */
+        let age = 1/this._H0parsec;
+        if (this.is_single_matter){
+            age*=2/3;
+        }
+        else if (this.is_single_radiation){
+            age*=1/2;
+        }
+        else if (this.is_single_cosmo){
+            return NaN;
+        }
+        else if (!this.is_single_radiation){
+            age *=
+                this.simpson(this, this.integral_duration_substituated, 0, 1, 10000);
+        }
+        return age;
 	}
 
 	/**
 	 * name
-	 */
-	public emission_age(z: number) {
-		let infimum = z / (1 + z);
-		let age: number;
-		age =
-			this.simpson(this, this.integral_duration_substituated, infimum, 1, 1000) /
-			this._H0parsec;
-		return age;
-	}
+	 */	
+	public emission_age(z : number) {
+        let infimum = z / (1 + z);
+        let age : number;
+        let H=this._H0parsec;
+        if (this.is_single_cosmo){
+            age=NaN;
+        }
+        else if (this.is_single_curvature) {
+            age=1/(H*(1+z));
+        }
+        else if (this.is_single_matter){
+            age=(2/3)*Math.pow(1+z,-3/2)/H;
+        }
+        else if (this.is_single_radiation){
+            age=(1/2)*(1/H)*Math.pow(1+z,-2);
+        }
+        else{
+        age =
+            this.simpson(this, this.integral_duration_substituated, infimum, 1, 1000) /H;
+        }
+        return age;
+    }
 
 	/**
 	 * Compute the cosmologic duration between two cosmologics shift z
@@ -773,18 +891,22 @@ parsec_to_meters(l) {
 	 * @param z_2 the farest cosmologic shift from ours (z = 0)
 	 * @returns error if z_1 or z_2 < -1, duration if both value are accepted.
 	 */
-	public duration(z_1: number, z_2: number) {
-		if (z_1 <= -1 || z_2 <= -1) {
-			throw new Error("Cosmologic shift z cannot be equal or lower than -1 included");
-		}
-
-		let infimum = z_1 / (1 + z_1);
-		let supremum = z_2 / (1 + z_2);
-
-		let duration: number;
-		duration = this.simpson(this, this.integral_duration_substituated, infimum, supremum, 1000) / this._H0parsec;
-		return duration;
-	}
+	public duration(z_1, z_2) : number {
+        if (z_1 <= -1 || z_2 <= -1) {
+            throw new Error("Cosmologic shift z cannot be equal or lower than -1 included");
+        }
+        let duration : number ;
+        if (this.is_single_curvature || this.is_single_matter || this.is_single_radiation){
+            duration= this.emission_age(z_2)-this.emission_age(z_1);
+        }
+        else if (this.is_single_cosmo){
+            duration=(1/this.H0parsec)*Math.log(1+z_1/(1+z_2))
+        }
+        let infimum = z_1 / (1 + z_1);
+        let supremum = z_2 / (1 + z_2);
+        duration = this.simpson(this, this.integral_duration_substituated, infimum, supremum, 1000) / this._H0parsec;
+        return duration;
+    }
 
 
 	/**
@@ -850,7 +972,7 @@ public theta(D,z,dm):number{
  * @returns theta
  */
 public theta_kpc(D,z,dm):number{
-		let D_m = this.parsec_to_meters((D/1000));
+		let D_m = this.kiloparsec_to_meters((D));
 		return this.theta(D_m,z,dm);
 
 	}
@@ -873,7 +995,7 @@ public D(theta,z,dm):Object{
 	}
 	let add = this.angular_diameter_distance(z,distance);
 	let D_meters = add*Number(theta)/206265;
-	let D_kpc = 1000*this.meter_to_parsec(D_meters);
+	let D_kpc = this.meter_to_kiloparsec(D_meters);
 	return {"m" : D_meters , "kpc" : D_kpc};
 }
 
