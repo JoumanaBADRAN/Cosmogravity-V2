@@ -528,6 +528,18 @@ export class Simulation_universe extends Simulation {
             + Number(omegalambda0) * Yde);
     }
     /**
+     * will be used for reverse calculations
+     */
+    derivative_function_E(x) {
+        let w0 = this.dark_energy.w_0;
+        let w1 = this.dark_energy.w_1;
+        let omega_m = this.matter_parameter;
+        let omega_r = this.calcul_omega_r();
+        let omega_lambda = this.dark_energy.parameter_value;
+        let U = 3 * (w1 / Math.pow(1 + Number(x), 2) + (w0 + w1 + 1) / (1 + Number(x)));
+        return U * this.function_E(Number(x), omega_m, omega_lambda, omega_r);
+    }
+    /**
      * calculates the temperature as a function of the shift z
      * @param z shift
      *
@@ -948,4 +960,287 @@ export class Simulation_universe extends Simulation {
     equa_diff_time(Simu, z, t = 0) {
         return 1 / (this.H0parsec * (1 + z) * Math.sqrt(Simu.F(z)));
     }
+    //CALCULS INVERSES
+    //REVERSE CALCULATIONS 
+    reverse_shift_dm(dm_param) {
+        let dm = Number(dm_param);
+        let omega_k = this.calcul_omega_k();
+        let za = 0;
+        let zb = 5e10;
+        let ex = 0.00001; //indicates the permissible uncertainty for the dichotomie method
+        //"reconditionner" is a list of two values : [new_zb,constraint]. constraint=0 or 1.
+        // 0 means there is no constraint.
+        let reconditionner = this.reconditionner(za, zb);
+        zb = Number(reconditionner[0]) - 0.0001;
+        let constraint = Number(reconditionner[1]);
+        let dm_za = this.metric_distance(za);
+        let dm_zb = this.metric_distance(zb);
+        if (Number(dm) === 0) {
+            return 0;
+        }
+        if (omega_k <= 0) {
+            let limit = 0;
+            if (constraint == 0) {
+                while (dm > dm_zb && limit < 100) {
+                    zb = zb * 10;
+                    dm_zb = this.metric_distance(zb);
+                    limit += 1;
+                }
+                if (limit >= 100) {
+                    return NaN;
+                }
+            }
+            /* the method "metric_distance" is monotonous if omega_k<=0. If dm > dm_zb and that
+            zb is at a maximum, no solution can be found*/
+            if (dm > dm_zb) {
+                return NaN;
+            }
+            let Z = this.dichotomie(za, zb, this.metric_distance_simpson, dm, ex);
+            return Z;
+        }
+        else {
+            //Amplitude A of the method "delta_dm"
+            let A = (this.constants.c / (this._H0parsec * Math.sqrt(Math.abs(omega_k))));
+            if (dm > A) {
+                return NaN;
+            }
+            let integB = Math.sqrt(Math.abs(omega_k)) * this.simpson(this, this.metric_distance_simpson, 0, zb, 10000);
+            //this.simpson(0, zb, fonction_dm, omegam0, Number(omegalambda0), Number(Or), eps);
+            //In this case, sin(integrale) is monotonous on the interval [za;zb]
+            if (integB < Math.PI / 2) {
+                //We check that dm<dm_zb because dm_zb<A.
+                if (dm > dm_zb) {
+                    return NaN;
+                }
+                return this.dichotomie(0, zb, this.metric_distance_simpson, dm, ex);
+            }
+            else if ((integB > Math.PI / 2) && (integB < Math.PI)) {
+                let z_Pi_div_2 = this.dichotomie(0, zb, this.Integral_dm, Math.PI / 2, ex);
+                let z_sol_1 = this.dichotomie(0, z_Pi_div_2, this.metric_distance_simpson, dm, ex);
+                if (dm > dm_zb) {
+                    this.dichotomie(z_Pi_div_2, zb, this.metric_distance_simpson, dm, ex);
+                    let z_Pi = Number(this.dichotomie(0, 5e10, this.Integral_dm, Math.PI, ex));
+                    let z_sol_2 = this.dichotomie(z_Pi_div_2, z_Pi, this.metric_distance_simpson, dm, ex);
+                    return (z_sol_1 + ", " + z_sol_2);
+                }
+                return z_sol_1;
+            }
+            else {
+                let z_Pi_div_2 = Number(this.dichotomie(0, zb, this.Integral_dm, Math.PI / 2, ex));
+                let z_Pi = Number(this.dichotomie(0, 5e10, this.Integral_dm, Math.PI, ex));
+                let z_sol_1 = this.dichotomie(0, z_Pi_div_2, this.metric_distance_simpson, dm, ex);
+                let z_sol_2 = this.dichotomie(z_Pi_div_2, z_Pi, this.metric_distance_simpson, dm, ex);
+                let z_f2 = z_sol_1 + ", " + z_sol_2;
+                return z_f2;
+            }
+        }
+    }
+    reconditionner(za, zb) {
+        let ex = 0.000001;
+        let omega_r = this.calcul_omega_r();
+        let omega_m = this.matter_parameter;
+        let omega_lambda = this.dark_energy.parameter_value;
+        let a = omega_r;
+        let b = 4 * omega_r + omega_m;
+        //We search the solutions of a polynomial of degree four
+        if (a != 0 && (Math.abs(a / b) > 1e-3 || Math.abs(a / c) > 1e-3)) {
+            let roots = this.fourth_order_solver();
+            if (roots.length >= 2) {
+                //We have at least two positive solutions. We select the smaller one.
+                if ((roots[0] > 0) && (roots[1] > 0)) {
+                    return [roots[1], 1];
+                }
+                //We hace at least two solution. One is positive and one is negative. We select the positive one.
+                else if ((roots[0] > 0) && (roots[1] < 0)) {
+                    return [roots[0], 1];
+                }
+            }
+        }
+        //We search the solutions of a polynomial of degree three
+        else {
+            let D_prime_za = this.derivative_function_E(za);
+            let D_prime_zb = this.derivative_function_E(zb);
+            if (D_prime_za * D_prime_zb < 0) {
+                let z_prime = Number(this.dichotomie(0, zb, this.derivative_function_E, 0, ex));
+                if (this.function_E(z_prime, omega_m, omega_lambda, omega_r) == 0) {
+                    return [z_prime, 1];
+                }
+                else if (this.function_E(z_prime, omega_m, omega_lambda, omega_r) < 0) {
+                    let z_pr = Number(this.dichotomie(0, z_prime, this.function_E, 0, ex));
+                    return [z_pr, 1];
+                }
+            }
+            else {
+                if (this.function_E(za, omega_m, omega_lambda, omega_r) * this.function_E(zb, omega_m, omega_lambda, omega_r) < 0) {
+                    let z_pr = Number(this.dichotomie(za, zb, this.function_E, 0, ex));
+                    return [z_pr, 1];
+                }
+            }
+        }
+        return [zb, 0];
+    }
+    fourth_order_solver() {
+        let omega_m = this._matter_parameter;
+        let omega_lambda = this.dark_energy.parameter_value;
+        let omega_r = this.calcul_omega_r();
+        let a = omega_r;
+        let b = 4 * omega_r + omega_m;
+        let C = 5 * omega_r + 2 * omega_m - omega_lambda + 1;
+        let d = 2 * omega_r + omega_m - 2 * omega_lambda + 2;
+        let p = -3 * Math.pow(b / a, 2) / 8 + C / a;
+        let q = Math.pow(b / a, 3) / 8 - (C / a) * (b / a) / 2 + d / a;
+        let U1 = this.cubic_root_searcher();
+        let z1 = (-Math.pow(U1 - p, 0.5) + Math.pow((U1 - p) - 4 * (0.5 * U1 - q / (2 * Math.pow(U1 - p, 0.5))), 0.5)) / 2;
+        let z2 = (-Math.pow(U1 - p, 0.5) - Math.pow((U1 - p) - 4 * (0.5 * U1 - q / (2 * Math.pow(U1 - p, 0.5))), 0.5)) / 2;
+        let z3 = (Math.pow(U1 - p, 0.5) + Math.pow((U1 - p) - 4 * (0.5 * U1 + q / (2 * Math.pow(U1 - p, 0.5))), 0.5)) / 2;
+        let z4 = (Math.pow(U1 - p, 0.5) - Math.pow((U1 - p) - 4 * (0.5 * U1 + q / (2 * Math.pow(U1 - p, 0.5))), 0.5)) / 2;
+        let x1 = z1 - 0.25 * (b / a);
+        let x2 = z2 - 0.25 * (b / a);
+        let x3 = z3 - 0.25 * (b / a);
+        let x4 = z4 - 0.25 * (b / a);
+        let array_roots = [x1, x2, x3, x4];
+        for (var i = array_roots.length - 1; i >= 0; i--) {
+            if (isNaN(array_roots[i])) {
+                array_roots.splice(i, 1);
+            }
+        }
+        array_roots.sort(function (a, b) { return b - a; });
+        return array_roots;
+    }
+    cubic_root_searcher() {
+        let omega_m = this._matter_parameter;
+        let omega_lambda = this.dark_energy.parameter_value;
+        let omega_r = this.calcul_omega_r();
+        let a = omega_r;
+        let b = 4 * omega_r + omega_m;
+        let C = 5 * omega_r + 2 * omega_m - omega_lambda + 1;
+        let p = -3 * Math.pow(b / a, 2) / 8 + C / a;
+        var Ua = -2 * p / 6;
+        var Ub = 5e10;
+        let ex = 0.0000001;
+        let Dev_Ua = this.derive_function_u(Ua);
+        let Dev_Ub = this.derive_function_u(Ub);
+        if (Dev_Ua * Dev_Ub < 0) {
+            let extremum = Number(this.dichotomie(Ua, Ub, this.derive_function_u, 0, ex));
+            if (this.function_u(extremum) > 0) {
+                if (this.function_u(0) * this.function_u(Ub) < 0) {
+                    let u_root = Number(this.dichotomie(0, Ub, this.function_u, 0, ex));
+                    return u_root;
+                }
+                else if (this.function_u(0) * this.function_u(-Ub) < 0) {
+                    let u_root = Number(this.dichotomie(-Ub, 0, this.function_u, 0, ex));
+                    return u_root;
+                }
+                else {
+                    return NaN;
+                }
+            }
+            else if (this.function_u(extremum) == 0) {
+                return extremum;
+            }
+            else {
+                let u_root = Number(this.dichotomie(extremum, Ub, this.function_u, 0, ex));
+                return u_root;
+            }
+        }
+        else {
+            if (this.function_u(0) * this.function_u(Ub) < 0) {
+                let u_root = Number(this.dichotomie(0, Ub, this.function_u, 0, ex));
+                return u_root;
+            }
+            else if (this.function_u(0) * this.function_u(-Ub) < 0) {
+                let u_root = Number(this.dichotomie(-Ub, 0, this.function_u, 0, ex));
+                return u_root;
+            }
+            else {
+                return NaN;
+            }
+        }
+    }
+    function_u(u) {
+        let omega_m = this._matter_parameter;
+        let omega_lambda = this.dark_energy.parameter_value;
+        let omega_r = this.calcul_omega_r();
+        let a = omega_r;
+        let b = 4 * omega_r + omega_m;
+        let C = 5 * omega_r + 2 * omega_m - omega_lambda + 1;
+        let d = 2 * omega_r + omega_m - 2 * omega_lambda + 2;
+        let e = 1;
+        let p = -3 * Math.pow(b / a, 2) / 8 + C / a;
+        let q = Math.pow(b / a, 3) / 8 - (C / a) * (b / a) / 2 + d / a;
+        let r = -3 * Math.pow(b / a, 4) / 256 + (C / a) * Math.pow(b / a, 2) / 16 - (d / a) * (b / a) / 4 + e / a;
+        return (Math.pow(u, 3) - p * Math.pow(u, 2) - 4 * r * u + (4 * p * r - q * q));
+    }
+    derive_function_u(u) {
+        let omega_m = this._matter_parameter;
+        let omega_lambda = this.dark_energy.parameter_value;
+        let omega_r = this.calcul_omega_r();
+        let a = omega_r;
+        let b = 4 * omega_r + omega_m;
+        let C = 5 * omega_r + 2 * omega_m - omega_lambda + 1;
+        let d = 2 * omega_r + omega_m - 2 * omega_lambda + 2;
+        let e = 1;
+        let p = -3 * Math.pow(b / a, 2) / 8 + C / a;
+        let r = -3 * Math.pow(b / a, 4) / 256 + (C / a) * Math.pow(b / a, 2) / 16 - (d / a) * (b / a) / 4 + e / a;
+        return (3 * u * u - 2 * p * u - 4 * r);
+    }
+    dichotomie(BornInf, BornSup, fonction, cible, ex) {
+        let z_inf = BornInf;
+        let z_sup = BornSup;
+        let eps = ex;
+        let dm_z_inf = fonction(this, z_inf);
+        let dm_z_sup = fonction(this, z_sup);
+        let max_iterations = 500;
+        let j = 0;
+        while (j < 500) {
+            let zc = (z_inf + z_sup) / 2.0;
+            let dm_zc = fonction(this, zc);
+            if (((z_sup - z_inf) / 2) < ex) {
+                if (Math.abs(zc / ex) < 100) {
+                    ex = ex * 1e-5;
+                }
+                else {
+                    return zc.toExponential(3);
+                }
+            }
+            else if (isNaN(dm_zc)) {
+                return NaN;
+            }
+            else if ((dm_zc - cible) * (dm_z_sup - cible) < 0) {
+                z_inf = zc;
+                dm_z_inf = dm_zc;
+                j += 1;
+            }
+            else {
+                z_sup = zc;
+                dm_z_sup = dm_zc;
+                j += 1;
+            }
+        }
+    }
+    metric_distance_simpson(Simu, z) {
+        let distance;
+        let curvature = Simu.calcul_omega_k();
+        distance = Simu.simpson(Simu, Simu.integral_distance, 0, Number(z), 100000);
+        if (curvature < 0) {
+            distance =
+                Math.sinh(Math.sqrt(Math.abs(curvature)) * distance) /
+                    Math.sqrt(Math.abs(curvature));
+        }
+        else if (curvature > 0) {
+            distance =
+                Math.sin(Math.sqrt(Math.abs(curvature)) * distance) /
+                    Math.sqrt(Math.abs(curvature));
+        }
+        distance *= Simu.constants.c / Simu._H0parsec;
+        return distance;
+    }
+    /**
+     * Will be used for the reverse calculation of the shift
+     */
+    Integral_dm(x) {
+        return Math.sqrt(Math.abs(this.calcul_omega_k())) *
+            this.simpson(this, this.integral_distance, 0, Number(x), 100000);
+    }
 }
+
