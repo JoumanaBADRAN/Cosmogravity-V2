@@ -7,6 +7,7 @@ import { TypeAnnee, c, k, h, G, AU, parsec, k_parsec, M_parsec, ly } from "./../
  * attributes :
  * @param temperature : current temperature of the universe.
  * @param hubble_cst : current value of the Hubble-LeMaître constant.
+ * @param H0parsec : Hubble-Lemaître constant in international system units
  * @param matter_parameter : current value of the matter density parameter.
  * @param dark_energy : object containing current value of dark energy density parameter, value of w_0 and value of w_1.\
  * 	Note : When w_0 = -1 and w_0 = 0, the universe is equivalent to his counterpart with only a cosmologic constant.
@@ -14,24 +15,48 @@ import { TypeAnnee, c, k, h, G, AU, parsec, k_parsec, M_parsec, ly } from "./../
  * @param has_cmb : Has Cosmic Microwave Background (CMB).
  * @param has_neutrino : self explanatory.
  * @param is_flat : Forcing the curvature density parameter to 0.
+ * @param is_single_matter : we use the single-fluid model with the matter dentity parameter equals to 1
+ * @param is_single_cosmo : we use the single-fluid model with the dark energy density parameter equals to 1
+ * @param is_single_radiation : we use the single-fluid model with the radiation dentity parameter equals to 1
+ * @param is_single_radiation : we use the single-fluid model with the curvature dentity parameter equals to 1
+
+
  *
  * methods names :
  * @method modify_dark_energy
  * @method modify_constants
+ * @method meter_to_light_year
+ * @method meter_to_parsec
+ * @method parsec_to_meters
+ * @method seconds_to_years
  * @method runge_kutta_universe_1
  * @method runge_kutta_universe_2
+ * @method calcul_rho_r
+ * @method calcul_rho_lambda
+ * @method calcul_rho_m
  * @method calcul_omega_r
  * @method calcul_omega_k
  * @method check_sum_omegas
  * @method Y
  * @method dY
  * @method F
+ * @method function_E
+ * @method T(z)
+ * @method H(z)
+ * @method omega_m_shift
+ * @method omega_k_shift
+ * @method omega_DE_shift
+ * @method omega_r_shift
  * @method compute_scale_factor
  * @method compute_omegas
  * @method time
  * @method universe_age
  * @method duration
+ * @method delta_dm
  * @method metric_distance
+ * @method theta
+ * @method theta_kpc
+ * @method D
  * @method luminosity
  * @method luminosity_distance
  * @method light_distance
@@ -65,11 +90,16 @@ export class Simulation_universe extends Simulation {
             nbrJours: TypeAnnee.Gregorienne,
         };
         this._temperature = temperature;
-        this._hubble_cst = (hubble_cst * 1e3) / (((AU * (180 * 3600)) / Math.PI) * 1e6);
+        this._hubble_cst = hubble_cst;
+        this._H0parsec = (hubble_cst * 1e3) / (((AU * (180 * 3600)) / Math.PI) * 1e6);
         this._matter_parameter = matter_parameter;
         this._has_cmb = has_cmb;
         this._has_neutrino = has_neutrino;
         this._is_flat = is_flat;
+        this.is_single_cosmo = false;
+        this.is_single_curvature = false;
+        this.is_single_matter = false;
+        this.is_single_radiation = false;
     }
     //--------------------------Accessors------------------------
     // temperature
@@ -85,7 +115,15 @@ export class Simulation_universe extends Simulation {
         return this._hubble_cst;
     }
     set hubble_cst(hubble_cst) {
-        this._hubble_cst = (hubble_cst * 1e3) / (((AU * (180 * 3600)) / Math.PI) * 1e6);
+        this._hubble_cst = hubble_cst;
+        this.check_sum_omegas();
+    }
+    //H0parsec
+    get H0parsec() {
+        return this.H0parsec;
+    }
+    set H0parsec(H0) {
+        this._H0parsec = H0;
         this.check_sum_omegas();
     }
     // matter_parameter
@@ -126,6 +164,59 @@ export class Simulation_universe extends Simulation {
     }
     set is_flat(is_flat) {
         this._is_flat = is_flat;
+        this.check_sum_omegas();
+    }
+    get _is_single_matter() {
+        return this._is_single_matter;
+    }
+    get _is_single_cosmo() {
+        return this._is_single_cosmo;
+    }
+    get _is_single_curvature() {
+        return this._is_single_curvature;
+    }
+    get _is_single_radiation() {
+        return this._is_single_radiation;
+    }
+    //modifies the simulation if we use a single fluid model. Replaces setters for is_single_matter,
+    //is_single_cosmo_cst, is_single_radiation and is_single_curvature
+    single_fluid(model) {
+        let w0 = this.dark_energy.w_0;
+        let w1 = this.dark_energy.w_1;
+        let T = 0;
+        let omega_r = 0;
+        let omega_m = 0;
+        let omega_lambda = 0;
+        if (model == "matter") {
+            omega_m = 1;
+            this.is_single_matter = true;
+        }
+        if (model == "cosmo_cst") {
+            omega_lambda = 1;
+            this.is_single_cosmo = true;
+        }
+        if (model == "radiation") {
+            this.is_single_radiation = true;
+            omega_r = 1;
+            let c = this.constants.c;
+            let h = this.constants.h;
+            let pi = Math.PI;
+            let G = this.constants.G;
+            let k = this.constants.k;
+            let H = this._H0parsec;
+            T = Math.pow(45 * Math.pow(c, 5) * Math.pow(h, 3) / (64 * Math.pow(pi, 6) * G * Math.pow(k, 4)), 1 / 4) * Math.pow(H, 1 / 2);
+            let A = 45 * Math.pow(c, 2) * Math.pow(h, 3);
+            let B = 64 * Math.pow(pi, 6) * G * Math.pow(k, 4);
+            T = Math.pow(A / B, 1 / 4) * Math.pow(H, 1 / 2);
+        }
+        if (model == "curvature") {
+            this.is_single_curvature = true;
+        }
+        this.matter_parameter = omega_m;
+        this.modify_dark_energy(omega_lambda, w0, w1);
+        this.calcul_omega_r();
+        this.temperature = T;
+        this.calcul_omega_k();
         this.check_sum_omegas();
     }
     //---------------------------methods-------------------------
@@ -186,6 +277,47 @@ export class Simulation_universe extends Simulation {
         else {
             var nbrjours = TypeAnnee.Gregorienne;
         }
+    }
+    /**
+     * Converts a length in meters to a lenght in light years
+     * @param l : length in meters
+     */
+    meter_to_light_year(l) {
+        return Number(l) / this.constants.ly;
+    }
+    /**
+ * Converts a length in meters to a lenght in parsec
+ * @param l : length in meters
+ */
+    meter_to_parsec(l) {
+        return Number(l) / this.constants.parsec;
+    }
+    /**
+     * Converts a length in meters to a lenght in kiloparsec
+     * @param l : length in meters
+     */
+    meter_to_kiloparsec(l) {
+        return Number(l) / this.constants.k_parsec;
+    }
+    /**
+*Converts a length in parsec to a lenght in meters
+@param l : length in parsec
+    */
+    parsec_to_meters(l) {
+        return Number(l) * this.constants.parsec;
+    }
+    /**
+*Converts a length in kiloparsec to a lenght in meters
+@param l : length in parsec
+    */
+    kiloparsec_to_meters(l) {
+        return Number(l) * this.constants.k_parsec;
+    }
+    /**
+     * Convert a duration in seconds to a duration in years
+     */
+    seconds_to_years(t) {
+        return Number(t) / (Number(this.constants.nbrJours) * 24 * 60 * 60);
     }
     /**
      * Fourth order Runge-Kutta method for second order derivatives for universe computation.
@@ -274,28 +406,36 @@ export class Simulation_universe extends Simulation {
             dy: dy
         };
     }
+    calcul_rho_r() {
+        let sigma = (2 * Math.pow(Math.PI, 5) * Math.pow(this.constants.k, 4)) /
+            (15 * Math.pow(this.constants.h, 3) * Math.pow(this.constants.c, 2));
+        return (4 * sigma * Math.pow(this.temperature, 4)) / Math.pow(this.constants.c, 3);
+    }
+    calcul_rho_lambda() {
+        let omega = this.dark_energy.parameter_value;
+        let const_cosmo = 3 * Math.pow(this._H0parsec, 2) * omega / Math.pow(this.constants.c, 2);
+        return const_cosmo * Math.pow(c, 2) / (8 * Math.PI * G);
+    }
+    calcul_rho_m() {
+        return 3 * Math.pow(this.hubble_cst * 3.086 * Math.pow(10, -16), 2) / (8 * Math.PI * G);
+    }
     /**
      * compute radiation density parameter at current time
      * @returns the radiation density parameter
+     *
+     * 		if (universe_age === undefined) {
+            age = this.universe_age();
      */
-    calcul_omega_r() {
-        
-        // let H0enannee = this.hubble_cst * (3600 * 24 * this._constants.nbrJours);
-        // let H0engannee = this.hubble_cst * (3600 * 24 * this._constants.nbrJours) * Math.pow(10, 9);
-        
-        let sigma = (2 * Math.pow(Math.PI, 5) * Math.pow(this.constants.k, 4)) /
-         (15 * Math.pow(this.constants.h, 3) * Math.pow(this.constants.c, 2));
-        let rho_r =
-        (4 * sigma * Math.pow(this.temperature, 4)) / Math.pow(this.constants.c, 3);
-        let omega_r = (8 * Math.PI * this.constants.G * rho_r) / (3 * Math.pow(this.hubble_cst, 2));
-
-        if (this.has_neutrino && this.has_cmb) {
-            omega_r = 1.68 * omega_r;
+    calcul_omega_r(omega) {
+        // Hubble-Lemaître constant in international system units (Système International)
+        let omega_r = (8 * Math.PI * this.constants.G * this.calcul_rho_r()) / (3 * Math.pow(this._H0parsec, 2));
+        if (this.has_neutrino) {
+            omega_r *= 1.68;
         }
-        else if (!this.has_neutrino && this.has_cmb) {
-            omega_r = 1 * omega_r;
+        if (this.is_single_radiation == true) {
+            omega_r = 1;
         }
-        else {
+        if (!this.has_cmb || this.is_single_cosmo || this.is_single_curvature || this.is_single_matter) {
             omega_r = 0;
         }
         return omega_r;
@@ -323,7 +463,7 @@ export class Simulation_universe extends Simulation {
     check_sum_omegas(modify_matter = true) {
         let is_param_modified = false;
         let omega_r = this.calcul_omega_r();
-        let sum = this.matter_parameter + this.calcul_omega_r() + this.dark_energy.parameter_value + this.calcul_omega_k();
+        let sum = this.matter_parameter + omega_r + this.dark_energy.parameter_value + this.calcul_omega_k();
         if (this.is_flat && sum !== 1) {
             is_param_modified = true;
             if (modify_matter) {
@@ -344,8 +484,8 @@ export class Simulation_universe extends Simulation {
     Y(x) {
         return Math.exp(-3 *
             (this.dark_energy.w_0 + this.dark_energy.w_1 + 1) *
-            Math.log(x) -
-            3 * this.dark_energy.w_1 * (1 - x));
+            Math.log(Number(x)) -
+            3 * this.dark_energy.w_1 * (1 - Number(x)));
     }
     /**
      * Y' function \
@@ -365,10 +505,101 @@ export class Simulation_universe extends Simulation {
      * @returns value of F(x)
      */
     F(x) {
-        return ((1 + x) ** 2 * this.calcul_omega_k() +
-            (1 + x) ** 3 * this.matter_parameter +
-            (1 + x) ** 4 * this.calcul_omega_r() +
+        return (Math.pow((1 + x), 2) * this.calcul_omega_k() +
+            Math.pow((1 + x), 3) * this.matter_parameter +
+            Math.pow((1 + x), 4) * this.calcul_omega_r() +
             this.Y(1 / (1 + x)) * this.dark_energy.parameter_value);
+    }
+    /**
+     * E function \
+     * will be used tu calculate the Omegas in function of the shift z
+     * @param x
+     * @param omegam0 matter density parameter
+     * @param omegalambda0 dark energy parameter
+     * @param Or radiation density parameter
+     * @returns
+     */
+    function_E(x, omegam0, omegalambda0, Or) {
+        let w0 = this.dark_energy.w_0;
+        let w1 = this.dark_energy.w_1;
+        let Yde = Math.exp(-3 * (w1 + w0 + 1) * Math.log(1 / (1 + x)) - (3 * w1 * (1 - (1 / (1 + x)))));
+        return (Number(Or) * Math.pow((1 + x), 4) + Number(omegam0) * Math.pow((1 + x), 3)
+            + (1 - Number(omegam0) - Number(Or) - Number(omegalambda0)) * Math.pow((1 + x), 2)
+            + Number(omegalambda0) * Yde);
+    }
+    /**
+     * will be used for reverse calculations
+     */
+    derivative_function_E(x) {
+        let w0 = this.dark_energy.w_0;
+        let w1 = this.dark_energy.w_1;
+        let omega_m = this.matter_parameter;
+        let omega_r = this.calcul_omega_r();
+        let omega_lambda = this.dark_energy.parameter_value;
+        let U = 3 * (w1 / Math.pow(1 + Number(x), 2) + (w0 + w1 + 1) / (1 + Number(x)));
+        return U * this.function_E(Number(x), omega_m, omega_lambda, omega_r);
+    }
+    /**
+     * calculates the temperature as a function of the shift z
+     * @param z shift
+     *
+     */
+    T(z) {
+        return this.temperature * (1 + Number(z));
+    }
+    /**
+     * calculates the Hubble constant as a function of the shift z
+     * @param z
+     */
+    H(z) {
+        let omega_m0 = this.matter_parameter;
+        let omega_DE0 = this.dark_energy.parameter_value;
+        let omega_r0 = this.calcul_omega_r();
+        return this.hubble_cst * Math.pow(this.function_E(Number(z), omega_m0, Number(omega_DE0), omega_r0), 0.5);
+    }
+    /**
+     * calculates the matter density parameter as a function of the shif z
+     * @param z Redshift
+     * */
+    omega_m_shift(z) {
+        //		return this.matter_parameter * (1 + z)**3 / this.F(z);
+        let omega_m0 = this.matter_parameter;
+        let omega_DE0 = this.dark_energy.parameter_value;
+        let omega_r0 = this.calcul_omega_r();
+        return omega_m0 * Math.pow(1 + Number(z), 3) / this.function_E(Number(z), omega_m0, Number(omega_DE0), omega_r0);
+    }
+    /**
+ * calculates the curvature density parameter as a function of the shif z
+ * @param z Redshift
+ * */
+    omega_k_shift(z) {
+        let omega_k0 = this.calcul_omega_k();
+        let omega_m0 = this.matter_parameter;
+        let omega_DE0 = this.dark_energy.parameter_value;
+        let omega_r0 = this.calcul_omega_r();
+        return omega_k0 * Math.pow(1 + Number(z), 2) /
+            this.function_E(Number(z), omega_m0, Number(omega_DE0), omega_r0);
+    }
+    /**
+    * calculates the dark energy parameter as a function of the shif z
+    * @param z Redshift
+    * */
+    omega_DE_shift(z) {
+        let omegaDE0 = this.dark_energy.parameter_value;
+        let omega_m0 = this.matter_parameter;
+        let omega_r0 = this.calcul_omega_r();
+        return omegaDE0 / this.function_E(Number(z), omega_m0, omegaDE0, omega_r0);
+    }
+    /**
+    * calculates the radiation density parameter as a function of the shif z
+    * @param z Redshift
+    * */
+    omega_r_shift(z) {
+        let omega_r0 = this.calcul_omega_r();
+        let omega_m0 = this.matter_parameter;
+        let omega_DE0 = this.dark_energy.parameter_value;
+        return omega_r0 * Math.pow(1 + Number(z), 4) / this.function_E(Number(z), omega_m0, omega_DE0, omega_r0);
+        //return this.calcul_omega_r() * (1 + z)**3 / this.F(z);
     }
     /**
      * compute the scale factor of the universe as function of time
@@ -390,7 +621,7 @@ export class Simulation_universe extends Simulation {
         }
         let result = this.runge_kutta_universe_2(step, 0, 1, 1, this.equa_diff_a, interval_a);
         for (let index = 0; index < result.x.length; index++) {
-            result.x[index] = (result.x[index] / this.hubble_cst + age) / (3600 * 24 * 365.2425);
+            result.x[index] = (result.x[index] / this.H0parsec + age) / (3600 * 24 * 365.2425);
         }
         return result;
     }
@@ -406,10 +637,10 @@ export class Simulation_universe extends Simulation {
         let radiation = this.calcul_omega_r();
         let curvature = this.calcul_omega_k();
         z_array.forEach(z => {
-            omega_matter.push(this.matter_parameter * (1 + z) ** 3 / this.F(z));
-            omega_rad.push(radiation * (1 + z) ** 3 / this.F(z));
-            omega_de.push(this.dark_energy.parameter_value * (1 + z) ** 3 / this.F(z));
-            omega_courbure.push(curvature * (1 + z) ** 3 / this.F(z));
+            omega_matter.push(this.matter_parameter * Math.pow((1 + z), 3) / this.F(z));
+            omega_rad.push(radiation * Math.pow((1 + z), 3) / this.F(z));
+            omega_de.push(this.dark_energy.parameter_value * Math.pow((1 + z), 3) / this.F(z));
+            omega_courbure.push(curvature * Math.pow((1 + z), 3) / this.F(z));
         });
         return {
             omega_matter: omega_matter,
@@ -436,19 +667,25 @@ export class Simulation_universe extends Simulation {
         }
         return this.runge_kutta_universe_1(step, zmin, time_zmin, this.equa_diff_time, [zmin, zmax]);
     }
-    /**
-     * Compute the current universe's age
-     * @returns the current age of the universe in seconds
-     */
     universe_age() {
         /*
         To compute the age of the universe we need to integrate from x = 0 to x -> infinity. To resolve this problem we do a substitution with
         x = y / (1 - y) which implies dx = dy / (1 - y)². This result with an integral from y = 0 to y = 1 that can be digitally resolved.
         */
-        let age;
-        age =
-            this.simpson(this, this.integral_duration_substituated, 0, 1, 10000) /
-                this.hubble_cst;
+        let age = 1 / this._H0parsec;
+        if (this.is_single_matter) {
+            age *= 2 / 3;
+        }
+        else if (this.is_single_radiation) {
+            age *= 1 / 2;
+        }
+        else if (this.is_single_cosmo) {
+            return NaN;
+        }
+        else if (!this.is_single_radiation) {
+            age *=
+                this.simpson(this, this.integral_duration_substituated, 0, 1, 10000);
+        }
         return age;
     }
     /**
@@ -457,9 +694,23 @@ export class Simulation_universe extends Simulation {
     emission_age(z) {
         let infimum = z / (1 + z);
         let age;
-        age =
-            this.simpson(this, this.integral_duration_substituated, infimum, 1, 1000) /
-                this.hubble_cst;
+        let H = this._H0parsec;
+        if (this.is_single_cosmo) {
+            age = NaN;
+        }
+        else if (this.is_single_curvature) {
+            age = 1 / (H * (1 + z));
+        }
+        else if (this.is_single_matter) {
+            age = (2 / 3) * Math.pow(1 + z, -3 / 2) / H;
+        }
+        else if (this.is_single_radiation) {
+            age = (1 / 2) * (1 / H) * Math.pow(1 + z, -2);
+        }
+        else {
+            age =
+                this.simpson(this, this.integral_duration_substituated, infimum, 1, 1000) / H;
+        }
         return age;
     }
     /**
@@ -472,21 +723,28 @@ export class Simulation_universe extends Simulation {
         if (z_1 <= -1 || z_2 <= -1) {
             throw new Error("Cosmologic shift z cannot be equal or lower than -1 included");
         }
+        let duration;
+        if (this.is_single_curvature || this.is_single_matter || this.is_single_radiation) {
+            duration = this.emission_age(z_2) - this.emission_age(z_1);
+        }
+        else if (this.is_single_cosmo) {
+            duration = (1 / this.H0parsec) * Math.log(1 + z_1 / (1 + z_2));
+        }
         let infimum = z_1 / (1 + z_1);
         let supremum = z_2 / (1 + z_2);
-        let duration;
-        duration = this.simpson(this, this.integral_duration_substituated, infimum, supremum, 1000) / this.hubble_cst;
+        duration = this.simpson(this, this.integral_duration_substituated, infimum, supremum, 1000) / this._H0parsec;
         return duration;
     }
     /**
-     * Compute the distance between us and an object at a cosmologic redshit z
-     * @param z cosmologic shift
-     * @returns the distance
+     * Compute the distance between two cosmologics shift z
+     * @param z_1 the closest cosmologic shift from ours (z = 0)
+     * @param z_2 the farest cosmologic shift from ours (z = 0)
+     * @returns error if z_1 or z_2 < -1, duration if both value are accepted.
      */
-    metric_distance(z) {
+    delta_dm(z1, z2) {
         let distance;
         let curvature = this.calcul_omega_k();
-        distance = this.simpson(this, this.integral_distance, 0, z, 100);
+        distance = this.simpson(this, this.integral_distance, Number(z1), Number(z2), 100000);
         if (curvature < 0) {
             distance =
                 Math.sinh(Math.sqrt(Math.abs(curvature)) * distance) /
@@ -497,8 +755,66 @@ export class Simulation_universe extends Simulation {
                 Math.sin(Math.sqrt(Math.abs(curvature)) * distance) /
                     Math.sqrt(Math.abs(curvature));
         }
-        distance *= this.constants.c / this.hubble_cst;
+        distance *= this.constants.c / this._H0parsec;
         return distance;
+    }
+    /**
+     * Compute the distance between us and an object at a cosmologic redshit z
+     * @param z cosmologic shift
+     * @returns the distance
+     */
+    metric_distance(z) {
+        let distance = this.delta_dm(0, z);
+        return distance;
+    }
+    /**
+     * Computes the value of theta in second of arc
+     * @param  D
+     * @param  z Cosmologic shift
+     * @param dm Metric distance
+     * @returns theta
+     */
+    theta(D, z, dm) {
+        let distance;
+        if (dm === undefined) {
+            distance = Number(this.metric_distance(z));
+        }
+        else {
+            distance = Number(dm);
+        }
+        let add = this.angular_diameter_distance(z, distance);
+        return 206265 * Number(D) / add;
+    }
+    /**
+ * Computes the value of theta in second of arc if D is in kiloparsec
+ * @param  D
+ * @param  z Cosmologic shift
+ * @param dm Metric distance
+ * @returns theta
+ */
+    theta_kpc(D, z, dm) {
+        let D_m = this.kiloparsec_to_meters((D));
+        return this.theta(D_m, z, dm);
+    }
+    /**
+    * Computes the value of D in meters and in parsec
+    * @param  theta (in seconds of arcs)
+    * @param  z Cosmologic shift
+    * @param dm Metric distance
+    * @returns D
+    */
+    D(theta, z, dm) {
+        let distance;
+        if (dm === undefined) {
+            distance = Number(this.metric_distance(z));
+        }
+        else {
+            distance = Number(dm);
+        }
+        let add = this.angular_diameter_distance(z, distance);
+        let D_meters = add * Number(theta) / 206265;
+        let D_kpc = this.meter_to_kiloparsec(D_meters);
+        return { "m": D_meters, "kpc": D_kpc };
     }
     /**
      * Compute the luminosity distance
@@ -509,12 +825,15 @@ export class Simulation_universe extends Simulation {
     luminosity_distance(z, distance_metric) {
         let distance;
         if (distance_metric === undefined) {
-            distance = this.metric_distance(z);
+            distance = Number(this.metric_distance(z));
         }
         else {
             distance = distance_metric;
         }
-        return distance * (1 + z);
+        let lum_dis = distance * (1 + z);
+        // dictionnaire test 
+        let values_unit = { pc: this.meter_to_parsec(lum_dis), meter: lum_dis, ly: this.meter_to_light_year(lum_dis) };
+        return values_unit;
     }
     /**
      * @param z Cosmologic shift
@@ -523,7 +842,7 @@ export class Simulation_universe extends Simulation {
     angular_diameter_distance(z, distance_metric) {
         let distance;
         if (distance_metric === undefined) {
-            distance = this.metric_distance(z);
+            distance = Number(this.metric_distance(z));
         }
         else {
             distance = distance_metric;
@@ -557,7 +876,7 @@ export class Simulation_universe extends Simulation {
     brightness(z, luminosity, distance_metric) {
         let distance;
         if (distance_metric === undefined) {
-            distance = this.metric_distance(z);
+            distance = Number(this.metric_distance(z));
         }
         else {
             distance = distance_metric;
@@ -574,12 +893,13 @@ export class Simulation_universe extends Simulation {
     apparent_diameter(D_e, z, distance_metric) {
         let distance;
         if (distance_metric === undefined) {
-            distance = this.metric_distance(z);
+            distance = Number(this.metric_distance(z));
         }
         else {
             distance = distance_metric;
         }
-        return (D_e * (1 + z)) / distance;
+        let values_unit2 = { meter: (D_e * (1 + z)) / distance, pc: this.meter_to_parsec((D_e * (1 + z)) / distance), ly: this.meter_to_light_year((D_e * (1 + z)) / distance) };
+        return values_unit2;
     }
     /**
      * formula 1/(1 + x) * sqrt(1 / F)
@@ -624,10 +944,10 @@ export class Simulation_universe extends Simulation {
         let omega_r = Simu.calcul_omega_r();
         let omega_m = Simu.matter_parameter;
         let omega_de = Simu.dark_energy.parameter_value;
-        return (-(omega_r / a ** 3) -
-            (0.5 * omega_m) / a ** 2 +
+        return (-(omega_r / Math.pow(a, 3)) -
+            (0.5 * omega_m) / Math.pow(a, 2) +
             omega_de *
-                (a * Simu.Y(a) + (a ** 2 * Simu.dY(a)) / 2));
+                (a * Simu.Y(a) + (Math.pow(a, 2) * Simu.dY(a)) / 2));
     }
     /**
      * Right part of the differential equation of t(z) designed to be used in runge_kutta_universe_1 method
@@ -638,10 +958,286 @@ export class Simulation_universe extends Simulation {
      * Note: t is not used but has to be defined for this method to be accepted in the runge_kutta_equation_order1 method of simulation class
      */
     equa_diff_time(Simu, z, t = 0) {
-        return 1 / (this.hubble_cst * (1 + z) * Math.sqrt(Simu.F(z)));
+        return 1 / (this.H0parsec * (1 + z) * Math.sqrt(Simu.F(z)));
+    }
+    //CALCULS INVERSES
+    //REVERSE CALCULATIONS 
+    reverse_shift_dm(dm_param) {
+        let dm = Number(dm_param);
+        let omega_k = this.calcul_omega_k();
+        let za = 0;
+        let zb = 5e10;
+        let ex = 0.00001; //indicates the permissible uncertainty for the dichotomie method
+        //"reconditionner" is a list of two values : [new_zb,constraint]. constraint=0 or 1.
+        // 0 means there is no constraint.
+        let reconditionner = this.reconditionner(za, zb);
+        zb = Number(reconditionner[0]) - 0.0001;
+        let constraint = Number(reconditionner[1]);
+        let dm_za = this.metric_distance(za);
+        let dm_zb = this.metric_distance(zb);
+        if (Number(dm) === 0) {
+            return 0;
+        }
+        if (omega_k <= 0) {
+            let limit = 0;
+            if (constraint == 0) {
+                while (dm > dm_zb && limit < 100) {
+                    zb = zb * 10;
+                    dm_zb = this.metric_distance(zb);
+                    limit += 1;
+                }
+                if (limit >= 100) {
+                    return NaN;
+                }
+            }
+            /* the method "metric_distance" is monotonous if omega_k<=0. If dm > dm_zb and that
+            zb is at a maximum, no solution can be found*/
+            if (dm > dm_zb) {
+                return NaN;
+            }
+            let Z = this.dichotomie(za, zb, this.metric_distance_simpson, dm, ex);
+            return Z;
+        }
+        else {
+            //Amplitude A of the method "delta_dm"
+            let A = (this.constants.c / (this._H0parsec * Math.sqrt(Math.abs(omega_k))));
+            if (dm > A) {
+                return NaN;
+            }
+            let integB = Math.sqrt(Math.abs(omega_k)) * this.simpson(this, this.metric_distance_simpson, 0, zb, 10000);
+            //this.simpson(0, zb, fonction_dm, omegam0, Number(omegalambda0), Number(Or), eps);
+            //In this case, sin(integrale) is monotonous on the interval [za;zb]
+            if (integB < Math.PI / 2) {
+                //We check that dm<dm_zb because dm_zb<A.
+                if (dm > dm_zb) {
+                    return NaN;
+                }
+                return this.dichotomie(0, zb, this.metric_distance_simpson, dm, ex);
+            }
+            else if ((integB > Math.PI / 2) && (integB < Math.PI)) {
+                let z_Pi_div_2 = this.dichotomie(0, zb, this.Integral_dm, Math.PI / 2, ex);
+                let z_sol_1 = this.dichotomie(0, z_Pi_div_2, this.metric_distance_simpson, dm, ex);
+                if (dm > dm_zb) {
+                    this.dichotomie(z_Pi_div_2, zb, this.metric_distance_simpson, dm, ex);
+                    return (z_sol_1 + ", " + z_sol_2);
+                }
+                return z_sol_1;
+            }
+            else {
+                let z_Pi_div_2 = Number(dichotomie(0, zb, this.Integral_dm, Math.PI / 2, ex));
+                let z_Pi = Number(this.dichotomie(0, 5e10, this.Integral_dm, Math.PI, ex));
+                let z_sol_1 = this.dichotomie(0, z_Pi_div_2, this.metric_distance_simpson, dm, ex);
+                let z_sol_2 = this.dichotomie(z_Pi_div_2, z_Pi, this.metric_distance_simpson, dm, ex);
+                let z_f2 = z_sol_1 + ", " + z_sol_2;
+                return z_f2;
+            }
+        }
+    }
+    reconditionner(za, zb) {
+        let ex = 0.000001;
+        let omega_r = this.calcul_omega_r();
+        let omega_m = this.matter_parameter;
+        let omega_lambda = this.dark_energy.parameter_value;
+        let a = omega_r;
+        let b = 4 * omega_r + omega_m;
+        //We search the solutions of a polynomial of degree four
+        if (a != 0 && (Math.abs(a / b) > 1e-3 || Math.abs(a / c) > 1e-3)) {
+            let roots = this.fourth_order_solver();
+            if (roots.length >= 2) {
+                //We have at least two positive solutions. We select the smaller one.
+                if ((roots[0] > 0) && (roots[1] > 0)) {
+                    return [roots[1], 1];
+                }
+                //We hace at least two solution. One is positive and one is negative. We select the positive one.
+                else if ((roots[0] > 0) && (roots[1] < 0)) {
+                    return [roots[0], 1];
+                }
+            }
+        }
+        //We search the solutions of a polynomial of degree three
+        else {
+            let D_prime_za = this.derivative_function_E(za);
+            let D_prime_zb = this.derivative_function_E(zb);
+            if (D_prime_za * D_prime_zb < 0) {
+                let z_prime = Number(this.dichotomie(0, zb, this.derivative_function_E, 0, ex));
+                if (this.function_E(z_prime, omega_m, omega_lambda, omega_r) == 0) {
+                    return [z_prime, 1];
+                }
+                else if (this.function_E(z_prime, omega_m, omega_lambda, omega_r) < 0) {
+                    let z_pr = Number(this.dichotomie(0, z_prime, this.function_E, 0, ex));
+                    return [z_pr, 1];
+                }
+            }
+            else {
+                if (this.function_E(za, omega_m, omega_lambda, omega_r) * this.function_E(zb, omega_m, omega_lambda, omega_r) < 0) {
+                    let z_pr = Number(this.dichotomie(za, zb, this.function_E, 0, ex));
+                    return [z_pr, 1];
+                }
+            }
+        }
+        return [zb, 0];
+    }
+    fourth_order_solver() {
+        let omega_m = this._matter_parameter;
+        let omega_lambda = this.dark_energy.parameter_value;
+        let omega_r = this.calcul_omega_r();
+        let a = omega_r;
+        let b = 4 * omega_r + omega_m;
+        let C = 5 * omega_r + 2 * omega_m - omega_lambda + 1;
+        let d = 2 * omega_r + omega_m - 2 * omega_lambda + 2;
+        let p = -3 * Math.pow(b / a, 2) / 8 + C / a;
+        let q = Math.pow(b / a, 3) / 8 - (C / a) * (b / a) / 2 + d / a;
+        let U1 = this.cubic_root_searcher();
+        let z1 = (-Math.pow(U1 - p, 0.5) + Math.pow((U1 - p) - 4 * (0.5 * U1 - q / (2 * Math.pow(U1 - p, 0.5))), 0.5)) / 2;
+        let z2 = (-Math.pow(U1 - p, 0.5) - Math.pow((U1 - p) - 4 * (0.5 * U1 - q / (2 * Math.pow(U1 - p, 0.5))), 0.5)) / 2;
+        let z3 = (Math.pow(U1 - p, 0.5) + Math.pow((U1 - p) - 4 * (0.5 * U1 + q / (2 * Math.pow(U1 - p, 0.5))), 0.5)) / 2;
+        let z4 = (Math.pow(U1 - p, 0.5) - Math.pow((U1 - p) - 4 * (0.5 * U1 + q / (2 * Math.pow(U1 - p, 0.5))), 0.5)) / 2;
+        let x1 = z1 - 0.25 * (b / a);
+        let x2 = z2 - 0.25 * (b / a);
+        let x3 = z3 - 0.25 * (b / a);
+        let x4 = z4 - 0.25 * (b / a);
+        let array_roots = [x1, x2, x3, x4];
+        for (var i = array_roots.length - 1; i >= 0; i--) {
+            if (isNaN(array_roots[i])) {
+                array_roots.splice(i, 1);
+            }
+        }
+        array_roots.sort(function (a, b) { return b - a; });
+        return array_roots;
+    }
+    cubic_root_searcher() {
+        let omega_m = this._matter_parameter;
+        let omega_lambda = this.dark_energy.parameter_value;
+        let omega_r = this.calcul_omega_r();
+        let a = omega_r;
+        let b = 4 * omega_r + omega_m;
+        let C = 5 * omega_r + 2 * omega_m - omega_lambda + 1;
+        let p = -3 * Math.pow(b / a, 2) / 8 + C / a;
+        var Ua = -2 * p / 6;
+        var Ub = 5e10;
+        let ex = 0.0000001;
+        let Dev_Ua = this.derive_function_u(Ua);
+        let Dev_Ub = this.derive_function_u(Ub);
+        if (Dev_Ua * Dev_Ub < 0) {
+            let extremum = Number(this.dichotomie(Ua, Ub, this.derive_function_u, 0, ex));
+            if (this.function_u(extremum) > 0) {
+                if (this.function_u(0) * this.function_u(Ub) < 0) {
+                    let u_root = Number(this.dichotomie(0, Ub, this.function_u, 0, ex));
+                    return u_root;
+                }
+                else if (this.function_u(0) * this.function_u(-Ub) < 0) {
+                    let u_root = Number(this.dichotomie(-Ub, 0, this.function_u, 0, ex));
+                    return u_root;
+                }
+                else {
+                    return NaN;
+                }
+            }
+            else if (this.function_u(extremum) == 0) {
+                return extremum;
+            }
+            else {
+                let u_root = Number(this.dichotomie(extremum, Ub, this.function_u, 0, ex));
+                return u_root;
+            }
+        }
+        else {
+            if (this.function_u(0) * this.function_u(Ub) < 0) {
+                let u_root = Number(this.dichotomie(0, Ub, this.function_u, 0, ex));
+                return u_root;
+            }
+            else if (this.function_u(0) * this.function_u(-Ub) < 0) {
+                let u_root = Number(this.dichotomie(-Ub, 0, this.function_u, 0, ex));
+                return u_root;
+            }
+            else {
+                return NaN;
+            }
+        }
+    }
+    function_u(u) {
+        let omega_m = this._matter_parameter;
+        let omega_lambda = this.dark_energy.parameter_value;
+        let omega_r = this.calcul_omega_r();
+        let a = omega_r;
+        let b = 4 * omega_r + omega_m;
+        let C = 5 * omega_r + 2 * omega_m - omega_lambda + 1;
+        let d = 2 * omega_r + omega_m - 2 * omega_lambda + 2;
+        let e = 1;
+        let p = -3 * Math.pow(b / a, 2) / 8 + C / a;
+        let q = Math.pow(b / a, 3) / 8 - (C / a) * (b / a) / 2 + d / a;
+        let r = -3 * Math.pow(b / a, 4) / 256 + (C / a) * Math.pow(b / a, 2) / 16 - (d / a) * (b / a) / 4 + e / a;
+        return (Math.pow(u, 3) - p * Math.pow(u, 2) - 4 * r * u + (4 * p * r - q * q));
+    }
+    derive_function_u(u) {
+        let omega_m = this._matter_parameter;
+        let omega_lambda = this.dark_energy.parameter_value;
+        let omega_r = this.calcul_omega_r();
+        let a = omega_r;
+        let b = 4 * omega_r + omega_m;
+        let C = 5 * omega_r + 2 * omega_m - omega_lambda + 1;
+        let d = 2 * omega_r + omega_m - 2 * omega_lambda + 2;
+        let e = 1;
+        let p = -3 * Math.pow(b / a, 2) / 8 + C / a;
+        let r = -3 * Math.pow(b / a, 4) / 256 + (C / a) * Math.pow(b / a, 2) / 16 - (d / a) * (b / a) / 4 + e / a;
+        return (3 * u * u - 2 * p * u - 4 * r);
+    }
+    dichotomie(BornInf, BornSup, fonction, cible, ex) {
+        let z_inf = BornInf;
+        let z_sup = BornSup;
+        let eps = ex;
+        let dm_z_inf = fonction(this, z_inf);
+        let dm_z_sup = fonction(this, z_sup);
+        let max_iterations = 500;
+        let j = 0;
+        while (j < 500) {
+            let zc = (z_inf + z_sup) / 2.0;
+            let dm_zc = fonction(this, zc);
+            if (((z_sup - z_inf) / 2) < ex) {
+                if (Math.abs(zc / ex) < 100) {
+                    ex = ex * 1e-5;
+                }
+                else {
+                    return zc.toExponential(3);
+                }
+            }
+            else if (isNaN(dm_zc)) {
+                return NaN;
+            }
+            else if ((dm_zc - cible) * (dm_z_sup - cible) < 0) {
+                z_inf = zc;
+                dm_z_inf = dm_zc;
+                j += 1;
+            }
+            else {
+                z_sup = zc;
+                dm_z_sup = dm_zc;
+                j += 1;
+            }
+        }
+    }
+    metric_distance_simpson(Simu, z) {
+        let distance;
+        let curvature = Simu.calcul_omega_k();
+        distance = Simu.simpson(Simu, Simu.integral_distance, 0, Number(z), 100000);
+        if (curvature < 0) {
+            distance =
+                Math.sinh(Math.sqrt(Math.abs(curvature)) * distance) /
+                    Math.sqrt(Math.abs(curvature));
+        }
+        else if (curvature > 0) {
+            distance =
+                Math.sin(Math.sqrt(Math.abs(curvature)) * distance) /
+                    Math.sqrt(Math.abs(curvature));
+        }
+        distance *= Simu.constants.c / Simu._H0parsec;
+        return distance;
+    }
+    /**
+     * Will be used for the reverse calculation of the shift
+     */
+    Integral_dm(x) {
+        return Math.sqrt(Math.abs(this.calcul_omega_k())) *
+            this.simpson(this, this.integral_distance, 0, Number(x), 100000);
     }
 }
-
-// let s = new Simulation_universe()
-// console.log("o_r:",s.calcul_omega_r().toString())
-// console.log("dm1:",s.metric_distance(1).toString())
