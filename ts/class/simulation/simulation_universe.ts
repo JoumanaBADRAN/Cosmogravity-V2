@@ -142,6 +142,7 @@ private is_single_curvature:boolean;
 	}
 
 	public set hubble_cst(hubble_cst: number) {
+		this._H0parsec=(hubble_cst * 1e3) / (((AU * (180 * 3600)) / Math.PI) * 1e6);
 		this._hubble_cst = hubble_cst;
 		this.check_sum_omegas();
 	}
@@ -793,7 +794,7 @@ kiloparsec_to_meters(l) {
 			interval_a
 		);
 		for (let index = 0; index < result.x.length; index++) {
-			result.x[index] = (result.x[index] / this.H0parsec + age) / (3600 * 24 * 365.2425);
+			result.x[index] = (result.x[index] / this._H0parsec + age) / (3600 * 24 * 365.2425);
 		}
 		return result;
 	}

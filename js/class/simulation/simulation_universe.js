@@ -116,6 +116,7 @@ export class Simulation_universe extends Simulation {
     }
     set hubble_cst(hubble_cst) {
         this._hubble_cst = hubble_cst;
+        this._H0parsec=(hubble_cst * 1e3) / (((AU * (180 * 3600)) / Math.PI) * 1e6);
         this.check_sum_omegas();
     }
     //H0parsec
