@@ -467,7 +467,7 @@ export class Simulation_universe extends Simulation {
         let sum = this.matter_parameter + omega_r + this.dark_energy.parameter_value + this.calcul_omega_k();
         if (this.is_flat && sum !== 1) {
             is_param_modified = true;
-            if (modify_matter) {
+            if (!modify_matter) {
                 this.matter_parameter = 1 - this.dark_energy.parameter_value - omega_r;
             }
             else {
@@ -622,7 +622,7 @@ export class Simulation_universe extends Simulation {
         }
         let result = this.runge_kutta_universe_2(step, 0, 1, 1, this.equa_diff_a, interval_a);
         for (let index = 0; index < result.x.length; index++) {
-            result.x[index] = (result.x[index] / this.H0parsec + age) / (3600 * 24 * 365.2425);
+            result.x[index] = (result.x[index] / this._H0parsec + age) / (3600 * 24 * 365.2425);
         }
         return result;
     }
@@ -1242,3 +1242,20 @@ export class Simulation_universe extends Simulation {
             this.simpson(this, this.integral_distance, 0, Number(x), 100000);
     }
 }
+
+let s = new Simulation_universe();
+
+s.is_flat=true;
+let h0=50;
+let t0=25;
+s.hubble_cst=h0;
+s.temperature=t0;
+s.matter_parameter=0.8;
+
+console.log(s.calcul_omega_k()+s.calcul_omega_r()+s.matter_parameter
++s.dark_energy.parameter_value);
+console.log("omega_k : ",s.calcul_omega_k());
+console.log("omega_r : ",s.calcul_omega_r());
+console.log("omega_m : ",s.matter_parameter);
+console.log("omega_lamda : ",s.dark_energy.parameter_value);
+console.log("age univ : ",s.universe_age());

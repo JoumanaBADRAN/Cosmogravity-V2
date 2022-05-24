@@ -115,8 +115,8 @@ export class Simulation_universe extends Simulation {
         return this._hubble_cst;
     }
     set hubble_cst(hubble_cst) {
+        this._H0parsec = (hubble_cst * 1e3) / (((AU * (180 * 3600)) / Math.PI) * 1e6);
         this._hubble_cst = hubble_cst;
-        this._H0parsec=(hubble_cst * 1e3) / (((AU * (180 * 3600)) / Math.PI) * 1e6)
         this.check_sum_omegas();
     }
     //H0parsec
@@ -458,7 +458,7 @@ export class Simulation_universe extends Simulation {
     }
     /**
      * Check if the sum of the density parameters is equal to 1. Otherwise modify one parameter to correct the sum.
-     * @param modify_matter true : modify the matter parameter, false : dark energy parameter instead
+     * @param modify_matter true : modify the  dark energy parameter, false : matter parameter instead
      * @returns false if one parm has been modified, true otherwise
      */
     check_sum_omegas(modify_matter = true) {
@@ -467,7 +467,7 @@ export class Simulation_universe extends Simulation {
         let sum = this.matter_parameter + omega_r + this.dark_energy.parameter_value + this.calcul_omega_k();
         if (this.is_flat && sum !== 1) {
             is_param_modified = true;
-            if (modify_matter) {
+            if (!modify_matter) {
                 this.matter_parameter = 1 - this.dark_energy.parameter_value - omega_r;
             }
             else {
@@ -622,7 +622,7 @@ export class Simulation_universe extends Simulation {
         }
         let result = this.runge_kutta_universe_2(step, 0, 1, 1, this.equa_diff_a, interval_a);
         for (let index = 0; index < result.x.length; index++) {
-            result.x[index] = (result.x[index] / this.H0parsec + age) / (3600 * 24 * 365.2425);
+            result.x[index] = (result.x[index] / this._H0parsec + age) / (3600 * 24 * 365.2425);
         }
         return result;
     }
@@ -1244,12 +1244,3 @@ export class Simulation_universe extends Simulation {
             this.simpson(this, this.integral_distance, 0, Number(x), 100000);
     }
 }
-
-let s = new Simulation_universe();
-console.log(s.hubble_cst)
-s.hubble_cst=100;
-console.log(s.hubble_cst)
-
-
-console.log("omega_r : ",s.calcul_omega_r());
-console.log("omega_k : ",s.calcul_omega_k());

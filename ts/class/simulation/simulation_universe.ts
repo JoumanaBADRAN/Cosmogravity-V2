@@ -592,7 +592,7 @@ kiloparsec_to_meters(l) {
 
 	/**
 	 * Check if the sum of the density parameters is equal to 1. Otherwise modify one parameter to correct the sum.
-	 * @param modify_matter true : modify the matter parameter, false : dark energy parameter instead
+	 * @param modify_matter true : modify the  dark energy parameter, false : matter parameter instead
 	 * @returns false if one parm has been modified, true otherwise
 	 */
 	protected check_sum_omegas(modify_matter: Boolean = true): Boolean {
@@ -601,7 +601,7 @@ kiloparsec_to_meters(l) {
 		let sum = this.matter_parameter + omega_r + this.dark_energy.parameter_value + this.calcul_omega_k();
 		if (this.is_flat && sum !== 1) {
 			is_param_modified = true;
-			if (modify_matter) {
+			if (!modify_matter) {
 				this.matter_parameter = 1 - this.dark_energy.parameter_value - omega_r;
 			} else {
 				this.modify_dark_energy(1 - this.matter_parameter - omega_r);
