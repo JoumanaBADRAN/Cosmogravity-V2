@@ -552,7 +552,7 @@ kiloparsec_to_meters(l) {
 	 * 		if (universe_age === undefined) {
 			age = this.universe_age();
 	 */
-	 public calcul_omega_r(omega ? : number): number {
+	 public calcul_omega_r(): number {
 
 
 		// Hubble-Lemaître constant in international system units (Système International)
@@ -561,7 +561,7 @@ kiloparsec_to_meters(l) {
 		if (this.has_neutrino) {
 			omega_r *= 1.68;
 		}
-		if (this.is_single_radiation==true){
+		if (this.is_single_radiation){
 			omega_r=1;	
 		}
 		if (!this.has_cmb || this.is_single_cosmo || this.is_single_curvature || this.is_single_matter) {

@@ -121,7 +121,7 @@ export class Simulation_universe extends Simulation {
     }
     //H0parsec
     get H0parsec() {
-        return this.H0parsec;
+        return this._H0parsec;
     }
     set H0parsec(H0) {
         this._H0parsec = H0;
@@ -427,13 +427,13 @@ export class Simulation_universe extends Simulation {
      * 		if (universe_age === undefined) {
             age = this.universe_age();
      */
-    calcul_omega_r(omega) {
+    calcul_omega_r() {
         // Hubble-Lemaître constant in international system units (Système International)
         let omega_r = (8 * Math.PI * this.constants.G * this.calcul_rho_r()) / (3 * Math.pow(this._H0parsec, 2));
         if (this.has_neutrino) {
             omega_r *= 1.68;
         }
-        if (this.is_single_radiation == true) {
+        if (this.is_single_radiation) {
             omega_r = 1;
         }
         if (!this.has_cmb || this.is_single_cosmo || this.is_single_curvature || this.is_single_matter) {
@@ -1245,17 +1245,29 @@ export class Simulation_universe extends Simulation {
 
 let s = new Simulation_universe();
 
-s.is_flat=true;
-let h0=50;
+
 let t0=25;
+let h0=50;
+let omega_m=0.8;
+let omega_lambda=0.1;
 s.hubble_cst=h0;
 s.temperature=t0;
-s.matter_parameter=0.8;
+s.matter_parameter=omega_m;
+s.dark_energy.parameter_value=omega_lambda;
+
+
 
 console.log(s.calcul_omega_k()+s.calcul_omega_r()+s.matter_parameter
 +s.dark_energy.parameter_value);
+s.single_fluid("radiation");
+
 console.log("omega_k : ",s.calcul_omega_k());
 console.log("omega_r : ",s.calcul_omega_r());
 console.log("omega_m : ",s.matter_parameter);
 console.log("omega_lamda : ",s.dark_energy.parameter_value);
 console.log("age univ : ",s.universe_age());
+
+
+console.log("H0 : ",s.H0parsec);
+
+console.log("c : ",s.constants.G);
