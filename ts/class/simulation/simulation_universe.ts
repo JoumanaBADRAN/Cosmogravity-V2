@@ -232,9 +232,12 @@ private is_single_curvature:boolean;
 			let w0=this.dark_energy.w_0;
 			let w1=this.dark_energy.w_1;
 			let T=0;
-			let omega_r=0;
 			let omega_m=0;
 			let omega_lambda=0;
+			this.is_single_cosmo=false;
+			this.is_single_curvature=false;
+			this.is_single_matter=false;
+			this.is_single_radiation=false;
 			if (model == "matter") {
 				omega_m=1;
 				this.is_single_matter=true;

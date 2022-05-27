@@ -188,6 +188,10 @@ export class Simulation_universe extends Simulation {
         let omega_r = 0;
         let omega_m = 0;
         let omega_lambda = 0;
+        this.is_single_cosmo=false;
+        this.is_single_curvature=false;
+        this.is_single_matter=false;
+        this.is_single_radiation=false;
         if (model == "matter") {
             omega_m = 1;
             this.is_single_matter = true;
