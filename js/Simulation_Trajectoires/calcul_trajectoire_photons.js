@@ -223,8 +223,12 @@ function genereHtml(){
     	
 	jstring +='<th class="tg-6l4m" id="rayonschwars" title="" >$rs=\\frac{2GM}{c^{2}}(m)$</th>';
 
-	jstring +='<th class="tg-6l4m" id="gravtxt" title="">$grav=\\frac{GM}{R^{2}}\\frac{1}{9.81}(g)$</th>';																																	 
-    jstring +='</tr>';
+	jstring +='<th class="tg-6l4m" id="gravtxt" title="">$grav=\\frac{GM}{R^{2}}\\frac{1}{9.81}(g)$</th>';		
+	jstring +='<th class="tg-6l4m" id="vitesseLibéra" title="">$Vlib=c(\\frac{rs}{R})^{1/2} $</th>';																															 
+    jstring +='<th class="tg-6l4m" id="gravSurface" title="">$gravS=\\frac{1}{2}c^{2}(\\frac{rs}{R^{2}})$</th>';
+	jstring +='<th class="tg-6l4m" id="TempTrouNoirtxt" title="">$T=6.15*10^{-8}\\frac{Msoleil}{M}(K)$</th>';
+	jstring +='<th class="tg-6l4m" id="tempsEvaporationTrouNoirtxt" title="">$t=6.6*10^{74}\\frac{M}{Msoleil}(s)$</th>';
+	jstring +='</tr>';
 
           
 	newRow.innerHTML = jstring;
@@ -241,6 +245,10 @@ function genereHtml(){
 	}
 	jstring +='<td class="tg-3ozo" id="m">0</td>';
 	jstring +='<td class="tg-3ozo" id="g">0</td>';
+	jstring +='<td class="tg-3ozo" id="Vlib"></td>';
+	jstring +='<td class="tg-3ozo" id="gravS"></td>';
+	jstring +='<td class="tg-3ozo" id="TempTN">0</td>';
+	jstring +='<td class="tg-3ozo" id="tempsEvapTN">0</td>';
 	jstring +='</tr>';
 
 	newRow2.innerHTML = jstring;
@@ -384,6 +392,30 @@ function initialisation(compteur){
 		document.getElementById("g").innerHTML=g.toExponential(2);
 	}
 
+		// Rayonnement de Hawking d’un trou noir
+
+	// 1. calcul température du trou noir
+	M_soleil = 1.989e30						;		//masse du soleil en kg
+	Temp_trouNoir = 6.5e-8 * M_soleil/M		;		//en Kelvin
+	document.getElementById("TempTN").innerHTML=Temp_trouNoir.toExponential(5);
+
+	// 2. calcul temps d'évaporation de Hawking (calcul simplifié)
+	tempsEvaporation_trouNoir = 6.6e74 * ((M_soleil/M)**3); 		//en secondes
+	document.getElementById("tempsEvapTN").innerHTML=tempsEvaporation_trouNoir.toExponential(5);
+	
+	// calcule de vitesse de liberation 
+	Vlib=c*Math.pow(rs/r_phy,1/2);
+	if(r_phy>=rs){
+	  document.getElementById("Vlib").innerHTML=Vlib.toExponential(2);
+	}
+	else{document.getElementById("Vlib").innerHTML=" ";}
+	//calcul de la gravité de surface
+	gravS=1/2*Math.pow(c,2)*rs/r_phy;
+	if(r_phy>=rs){
+	  document.getElementById("gravS").innerHTML=gravS.toExponential(2);
+	}
+	else{document.getElementById("gravS").innerHTML=" ";}
+
 	if (compteur==1){
 		vphiblab=c;
 		vrblab=phi0;
@@ -396,6 +428,7 @@ function initialisation(compteur){
   
   	return mobile;
 }  // fin fonction initialisation
+
 
 function verifnbr() {//fonction qui affiche un message d'erreur si des valeurs ne sont pas donnée dans l'une des cases
   
@@ -814,7 +847,7 @@ function animate(compteur,mobile,mobilefactor) {
 			vr_2_obs=resultat[1]*Math.sign(mobile.A_part_obs);
 			vp_2_obs=resultat[2]; 
 		}
-
+      
 
     //On ne devrait pas mettre a jour les positions x et y ici? au lieu de plus loin
     //Tracé de la particule
@@ -920,7 +953,7 @@ function animate(compteur,mobile,mobilefactor) {
 	} 
  //  Les différents "temps" et autres valeurs à afficher
 	if (element2.value != "mobile"){
-		if(mobile.r_part_obs >= rs){
+		if(mobile.r_part_obs >= rs*1.0000001){
 			mobile.temps_particule =0;
 			document.getElementById("ga"+compteur.toString()).innerHTML = '';
 			document.getElementById("r_par"+compteur.toString()).innerHTML = mobile.r_part_obs.toExponential(3);
@@ -932,9 +965,7 @@ function animate(compteur,mobile,mobilefactor) {
 			else{document.getElementById("vr_sc_mas"+compteur.toString()).innerHTML =vp_2_obs.toExponential(3);}
 			document.getElementById("v_tot"+compteur.toString()).innerHTML = vtotal.toExponential(8);
 			if(mobile.r_part_obs<=rs){
-				document.getElementById("v_tot"+compteur.toString()).innerHTML ="";
-				document.getElementById("vr_sc_mas"+compteur.toString()).innerHTML = "";
-				document.getElementById("vp_sc_mas"+compteur.toString()).innerHTML = "";
+				document.getElementById("r_par"+compteur.toString()).innerHTML = rs.toExponential(3);
 			}
 		}  																										  
 	}

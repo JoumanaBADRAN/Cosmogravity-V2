@@ -54,6 +54,8 @@
 	<script src="./js/Simulation_Trajectoires/graphe_potentiel_kerr.js"></script>
 	<script src="./js/Langues/gestion_langues.js"></script>
 	<script src="./js/Simulation_Trajectoires/Get_para.js"></script>
+	<script src="./js/Simulation_Trajectoires/joy.js"></script> 
+
 	<script type="text/javascript">
 		pause = true;
 		debut = true;
@@ -305,7 +307,8 @@
 		</span>
 	</div>
 
-  
+<div id="cccccccc">
+<div id="joyDiv" style="width:130px;height:130px" ></div></div>
 
   <!-- Scripts pour resize et tracer du graphique au chargement + chargement du menu-->
 <script src="js/Graphisme/Menu/nav.jquery.min.js"></script>
@@ -325,6 +328,12 @@
     notationvitesseree2kerr();
     infobulleobservateurdistant();
     peuxonrelancer=true;
+</script>
+
+<script type="text/javascript">
+//joystick
+// Create JoyStick object into the DIV 'joyDiv'
+var joy = new JoyStick('joyDiv');
 </script>
 
 <a id="idouvreengrand" type="hidden" href="Simulation_trajectoire_kerr_en_grand.html" target="_blank"><a/>

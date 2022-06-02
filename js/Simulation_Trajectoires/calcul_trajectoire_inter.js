@@ -262,8 +262,11 @@ function genereHtml(){
              //pour katex il faux mettre un antislash devant le antislash
 		jstring +='<th class="tg-6l4m" id="rayonschwars" title="" >$rs=\\frac{2GM}{c^{2}}(m)$</th>';
 		jstring +='<th class="tg-6l4m" id="gravtxt" title="">$grav=\\frac{GM}{R^{2}}\\frac{1}{9.81}(g)$</th>';						
- 
-        jstring +='</tr>'; 
+		jstring +='<th class="tg-6l4m" id="vitesseLibéra" title="">$Vlib=c(\\frac{rs}{R})^{1/2} $</th>';
+		jstring +='<th class="tg-6l4m" id="gravSurface" title="">$gravS=\\frac{1}{2}c^{2}(\\frac{rs}{R^{2}})$</th>';
+		jstring +='<th class="tg-6l4m" id="TempTrouNoirtxt" title="">$T=6.15*10^{-8}\\frac{Msoleil}{M}(K)$</th>';
+		jstring +='<th class="tg-6l4m" id="tempsEvaporationTrouNoirtxt" title="">$t=6.6*10^{74}\\frac{M}{Msoleil}(s)$</th>';
+		jstring +='</tr>'; 
 
 		  
         newRow.innerHTML = jstring;
@@ -278,7 +281,11 @@ function genereHtml(){
 			jstring += '<td class="tg-3ozo" id="E'+countt.toString()+'">0</td>';
 		}
 		jstring +='<td class="tg-3ozo" id="m">0</td>';
-		jstring +='<td class="tg-3ozo" id="g">0</td>';																	
+		jstring +='<td class="tg-3ozo" id="g">0</td>';
+		jstring +='<td class="tg-3ozo" id="Vlib">0</td>';	
+		jstring +='<td class="tg-3ozo" id="gravS">0</td>';
+		jstring +='<td class="tg-3ozo" id="TempTN">0</td>';
+		jstring +='<td class="tg-3ozo" id="tempsEvapTN">0</td>';																
 		jstring +='</tr>';
 
         newRow2.innerHTML = jstring;
@@ -369,6 +376,7 @@ function genereHtml(){
 	 
 }
 
+
 // calcul en temps réel des E, L,...
 function initialisation(compteur){
 	c = 299792458;
@@ -402,13 +410,16 @@ function initialisation(compteur){
 	if(teta1==180){vphi=0;}
 	if(teta1==90){vr=0;}
 	L = vphi * r0 / c;
+	
+	deltam_sur_m = 0;
 
 	document.getElementById("L"+compteur.toString()).innerHTML = L.toExponential(3);
 	document.getElementById("E"+compteur.toString()).innerHTML = E.toExponential(3);	
 	document.getElementById("m").innerHTML = rs.toExponential(3);
+	//document.getElementById("Vlib").innerHTML = Vlib.toExponential(3);
 
 	scale_factor = Number(document.getElementById("scalefactor").value);
-	mobile = { r0:r0, vphi:vphi, vr:vr, L:L, E:E , phi0:phi0 }; 
+	mobile = { r0:r0, vphi:vphi, vr:vr, L:L, E:E , phi0:phi0 , deltam_sur_m:deltam_sur_m}; 
 	
 	mobile["pointsvg"]="pointg"+compteur.toString();
 	mobile["graphesvg"]="#grsvg_"+compteur.toString();
@@ -471,6 +482,29 @@ function initialisation(compteur){
 	else{
 		document.getElementById("g").innerHTML=g.toExponential(2);
 	}
+
+		// Rayonnement de Hawking d’un trou noir
+
+	// 1. calcul température du trou noir
+	M_soleil = 1.989e30						;		//masse du soleil en kg
+	Temp_trouNoir = 6.5e-8 * M_soleil/M		;		//en Kelvin
+	document.getElementById("TempTN").innerHTML=Temp_trouNoir.toExponential(5);
+
+	// 2. calcul temps d'évaporation de Hawking (calcul simplifié)
+	tempsEvaporation_trouNoir = 6.6e74 * ((M_soleil/M)**3); 		//en secondes
+	document.getElementById("tempsEvapTN").innerHTML=tempsEvaporation_trouNoir.toExponential(5);
+
+	//calcul de vitesse de libération
+	Vlib=c*Math.pow(rs/r_phy,1/2);
+	if(r_phy>=rs){
+		document.getElementById("Vlib").innerHTML=Vlib.toExponential(2);
+	  }
+	  else{document.getElementById("Vlib").innerHTML=" ";}
+	  gravS=1/2*Math.pow(c,2)*rs/r_phy;
+	  if(r_phy>=rs){
+		document.getElementById("gravS").innerHTML=gravS.toExponential(2);
+	  }
+	  else{document.getElementById("gravS").innerHTML=" ";}
 	//pour la legende du graph
 	if(compteur==1){
 		vphiblab =v0;
@@ -553,7 +587,12 @@ function trajectoire(compteur,mobile) {
 		document.getElementById('r_phy').disabled = true;
 		document.getElementById('nombredefusees').disabled = true;
 
+		//joystick
 		var blyo = Number(document.getElementById("nombredefusees").value);
+
+		element2=document.getElementById('traject_type2');
+		if(blyo == 1 && element2.value == "mobile") { 	
+			document.getElementById("joyDiv").style.visibility='visible'; }
 
 		for (countt = 1; countt <= blyo; countt += 1) {
 			document.getElementById('r0'+countt.toString()+'').disabled = true;
@@ -715,6 +754,36 @@ function trajectoire(compteur,mobile) {
 			pausee(compteur,mobile,mobilefactor);
 		}, false);
 
+		if(blyo == 1) {
+			setInterval(function(){
+				
+				if(joy.GetY()<0){
+					while (deltam_sur_m < 0.5) { 					// tant que la réserve d'énergie est inférieur à 50%, on peut piloter
+						Delta_L=-joy.GetY()/((1e-12)*mobile.r0/rs)*mobile.E; //console.log("835 mobile.L mobile.r_part",mobile.L,mobile.r_part);
+						mobile.L=mobile.L+Delta_L ;
+						Delta_E=(1-rs/mobile.r_part)*mobile.L*Delta_L/mobile.E/Math.pow(mobile.r_part,2);
+						mobile.E=mobile.E+Delta_E; 
+						deltam_sur_m = deltam_sur_m + Math.abs(Delta_E/mobile.E);
+						document.getElementById("E"+compteur.toString()).innerHTML = mobile.E.toExponential(10);
+						document.getElementById("L"+compteur.toString()).innerHTML = mobile.L.toExponential(10);
+						document.getElementById("decal").innerHTML = deltam_sur_m.toExponential(1);
+					} 
+				}
+		
+				else if(joy.GetY()>0){
+					while (deltam_sur_m < 0.5) { 					// tant que la réserve d'énergie est inférieur à 50%, on peut piloter
+						Delta_L=-joy.GetY()/((1e-12)*mobile.r0/rs)*mobile.E;
+						mobile.L=mobile.L+Delta_L ;
+						Delta_E=(1-rs/mobile.r_part)*mobile.L*Delta_L/mobile.E/Math.pow(mobile.r_part,2) ;
+						mobile.E=mobile.E+Delta_E; 
+						deltam_sur_m = deltam_sur_m + Math.abs(Delta_E/mobile.E);
+						document.getElementById("E"+compteur.toString()).innerHTML = mobile.E.toExponential(10);
+						document.getElementById("L"+compteur.toString()).innerHTML = mobile.L.toExponential(10);
+						document.getElementById("decal").innerHTML = deltam_sur_m.toExponential(1);
+					}
+				}
+																// fin du while, réserve d'énergie finie = plus possible de piloter
+				}, 50); }
 
 	//Gestion des bouttons accélerer et decélerer
 		document.getElementById('plusvite').addEventListener('click', function() {
@@ -1065,18 +1134,21 @@ function animate(compteur,mobile,mobilefactor) {
  
 								
 		if (element2.value != "mobile"){
+			pvr=0 // petit vr c'est la projection sur l'axe de l'obsevateur ici égale 0 car on a prit l'observateur dans le plan perpendiculaire au plan du mouvement du mobile
 			if(mobile.r_part_obs >= r_phy) {
 				//z_obs=Math.pow(1-((vr_1_obs*vr_1_obs + vp_1_obs*vp_1_obs)/(c*c)),(-1/2))*Math.pow(1-rs/mobile.r_part_obs,-(1/2)) -1;
-				z_obs=(1+Math.abs(vr_1_obs/c))/((1-(vtotal/c)**2)**(1/2))*(1-rs/mobile.r_part_obs)**(-1/2)-1;
+				z_obs=(1+Math.abs(pvr/c))/((1-(vtotal/c)**2)**(1/2))*(1-rs/mobile.r_part_obs)**(-1/2)-1;
 				document.getElementById("decal"+compteur.toString()).innerHTML=z_obs.toExponential(3);
 			} 
 			else {
 				//z_obs=Math.pow(1-((vr_1_obs*vr_1_obs + vp_1_obs*vp_1_obs)/(c*c)),(-1/2))/beta(mobile.r_part_obs) -1;
-				z_obs=(1+Math.abs(vr_1_obs/c))/((1-(vtotal/c)**2)**(1/2))/beta(mobile.r_part_obs)-1;
+				z_obs=(1+Math.abs(pvr/c))/((1-(vtotal/c)**2)**(1/2))/beta(mobile.r_part_obs)-1;
 				document.getElementById("decal"+compteur.toString()).innerHTML=z_obs.toExponential(3);
 			}
 		}
-		else{document.getElementById("decal"+compteur.toString()).innerHTML="";}
+		else{
+			document.getElementById("decal"+compteur.toString()).innerHTML=deltam_sur_m.toExponential(1);
+	}
 
 
 	//  Les différents "temps" et autres valeurs à afficher
@@ -1150,6 +1222,22 @@ function animate(compteur,mobile,mobilefactor) {
 				document.getElementById('DivClignotante'+compteur.toString()).innerHTML = texte.pages_trajectoire.erreur;
 		}  
 	}
+
+//  Gestion de la diode réserve d'énergie
+if (element2.value == "mobile"){
+	if (Number(deltam_sur_m) <= 0.3) {
+		document.getElementById('DivClignotantePilot'+compteur.toString()).innerHTML = " <img src='./Images/diodever.gif' height='14px' />";
+		document.getElementById('DivClignotantePilot'+compteur.toString()).style.color = "green";
+	} 
+	else if (0.3 < Number(deltam_sur_m) && Number(deltam_sur_m) < 0.5) {
+		document.getElementById('DivClignotantePilot'+compteur.toString()).innerHTML = " <img src='./Images/diodejaune.gif' height='14px' />";
+		document.getElementById('DivClignotantePilot'+compteur.toString()).style.color = "yellow";
+	} 
+	else if (Number(deltam_sur_m) >= 0.5) {
+		document.getElementById('DivClignotantePilot'+compteur.toString()).innerHTML = " <img src='./Images/dioderouge.gif' height='14px' />";
+		document.getElementById('DivClignotantePilot'+compteur.toString()).style.color = "red";
+	} 
+}
 
   }   // fin r0 #0
 
@@ -1598,4 +1686,6 @@ function creation_blocs(context,mobilefactor,rmaxjson,r0ou2,compteur){
 	// Fermeture du chemin (facultative)
 	context.stroke();
 
+	
+	
 }

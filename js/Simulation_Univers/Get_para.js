@@ -8,9 +8,9 @@ var imageBDD = [];
 // la premiere image canvas fr, la deuxieme eng
 
 // constantes pour la creation de fenetres
-const DimFen600x650Res = "width=600,height=650,toolbar=no,location=no,directories=no,menubar=no,scrollbars=yes,copyhistory=no,resizable=yes,left=500";
-const DimFen1500x900Res = "width=1500,height=900,toolbar=no,location=no,directories=no,menubar=no,scrollbars=yes,copyhistory=no,resizable=no,left=400"; //creation d'une nouvelle fenetre avec dimensions 1400x900
-const DimFen550x450NoRes = "width=550,height=450,toolbar=no,location=no,directories=no,menubar=no,scrollbars=no,copyhistory=no,resizable=no";
+const DimFen600x650Res = "width=50,height=50,toolbar=no,location=no,directories=no,menubar=no,scrollbars=yes,copyhistory=no,resizable=yes,left=500";
+const DimFen1500x900Res = "width=50,height=50,toolbar=no,location=no,directories=no,menubar=no,scrollbars=yes,copyhistory=no,resizable=no,left=400"; //creation d'une nouvelle fenetre avec dimensions 1400x900
+const DimFen550x450NoRes = "width=50,height=50,toolbar=no,location=no,directories=no,menubar=no,scrollbars=no,copyhistory=no,resizable=no";
 
 /*
 		Fonctions gerant l'ouverture et l'envoi de données entre les pages calculs annexes/simulation et paramètre/simulation

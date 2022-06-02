@@ -190,14 +190,15 @@
 
 	"pages_trajectoire":{
 		"photon": "Photon",
-		"txt_explosion" : " Le rebond est limité à une vitesse d'impact de",
+		"txt_explosion" : " Rebond limité à vitesse d'impact < 300 m/s",
 		"txt_vlimite" : "Si la vitessse est supérieure à",
 		"horizon1" : "Horizon extérieur",
 		"horizon2" : "Horizon intérieur",
 		"moment" : "Moment angulaire",
 		"spin" : "paramètre de spin",										 
 		"gravtitle":"grav en g",
-		"r3":"distance >> rs ... sans être cosmologique",
+		"decalageSpec_EnergyReserve":"Si Observateur distant, le décalage spectral est affiché. Si Spationaute, la réserve d'énergie est affichée.",
+		"r3":"il est (par défaut) dans une direction perpendiculaire au plan de l’orbite (et de l’écran) et a une distance d à la fois >> rS , cte et << H0/c²",
 		"ctreastre":"Distance initiale du projectile au centre de l'astre",
 		"rayonschwars":"Rayon de Schwarzschild",
 		"diffderive":"Différence des dérivées seconde de r",
@@ -241,6 +242,7 @@
 		"temps_ecoule":"Temps propre mobile",
 		"parametre":"Paramètre",
 		"acceleration":"Gradient d'accélération &nbsp;<span id='DivClignotante'></span>",
+		"reserve_energy":"Réserve d'énergie &nbsp;<span id='DivClignotantePilot'></span>",
 		"titre_graphe":"Potentiel Effectif",
 		"impossible_canvas":"Impossible de récupérer le canvas.",
 		"impossible_context":"Impossible de récupérer le context.",
@@ -263,11 +265,14 @@
 		"observateur":"Observateur distant",
 		"mobile":"Spationaute",
 		"temps_obs":"Temps observateur distant",
-		"decal_spect":"Décalage spectral", 
+		"decal_spect":"Décalage spectral/réserve d'énergie", 
 		"r0egale0": "r0 est  positif",
 		"commandes_horsSchwarMassif":"Liste des commandes au clavier : \n\n- Trajectoire Complète : touche a \n- Trajectoire Simple : touche z\n- Stopper la simulation : touche q \n- Reset : touche s \n- Enregistrer : touche d \n- Recupérer les valeurs précédentes : touche f \n- Ralentir la simulation : touche w \n- Pause / Lecture : touche x \n- Accélérer la simulation : touche c",
 		"theta_label":"Angle de départ de la vitesse",
-		"philabel":"Angle de départ"
+		"philabel":"Angle de départ",
+		"TempTN":"Température du trou noir",
+		"tempsEvapTN":"temps d'évaporation de Hawking",
+		"infinity":"Infini"
 	},
 
 	"page_trajectoire_massive":{
@@ -277,7 +282,7 @@
 		"particule_ecrasee":"Le projectile s'est écrasé sur la surface du corps céleste.",
 		"particule_atteint_rh":"Le projectile a atteint Rh+.",
 		"rebond":"Rebond",
-		"amortissement":"Coefficient d'amortissement : le rebond est limité à une vitesse d'impact de ",
+		"amortissement":"Coefficient d'amortissement : Rebond limité à vitesse d'impact < 300 m/s ",
 		"non_baryonique":"Masse et/ou mobile non baryonique(s)",
 		"titre2":"Masse et mobile baryoniques",
 		"commandes":"Liste des commandes au clavier : \n\n- Trajectoire Complète : touche a \n- Trajectoire Simple : touche z \n- Avec ou sans rebond : touche e \n- Stopper la simulation : touche q \n- Reset : touche s \n- Enregistrer : touche d \n- Recupérer les valeurs précédentes : touche f \n- Ralentir la simulation : touche w \n- Pause / Lecture : touche x \n- Accélérer la simulation : touche c"

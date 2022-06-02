@@ -234,8 +234,11 @@ function textegravetetc(){
 	var texte = o_recupereJson();
 	
 	//document.getElementById("txt_explosion").title = texte.pages_trajectoire.txt_explosion;
-	
+	document.getElementById("TempTrouNoirtxt").title = texte.pages_trajectoire.TempTN;
+	document.getElementById("tempsEvaporationTrouNoirtxt").title = texte.pages_trajectoire.tempsEvapTN;
 	document.getElementById("gravtxt").title = texte.pages_trajectoire.gravtitle;
+	document.getElementById("gravS").title = texte.pages_trajectoire.gravStitle;
+	document.getElementById("Vlib").title = texte.pages_trajectoire.Vlibtitle;
 	document.getElementById("ctreastre").title = texte.pages_trajectoire.ctreastre;
 	document.getElementById("rayonschwars").title = texte.pages_trajectoire.rayonschwars;
 	document.getElementById("massetxt").title = texte.pages_trajectoire.massetxt;
@@ -546,7 +549,8 @@ function texteTrajectoireMassive(nbrderockets) {
 		document.getElementById("temps_ecoule"+count.toString()+"").innerHTML = texte.pages_trajectoire.temps_ecoule;
 		document.getElementById("acceleration"+count.toString()+"").innerHTML = "Gradient &nbsp;<span id='DivClignotante"+count.toString()+"'></span>";
 		document.getElementById("temps_obs"+count.toString()+"").innerHTML = texte.pages_trajectoire.temps_obs;
-		document.getElementById("decal_spect"+count.toString()+"").innerHTML = texte.pages_trajectoire.decal_spect;
+		document.getElementById("decal_spect"+count.toString()+"").innerHTML = texte.pages_trajectoire.decal_spect+"&nbsp;<span id='DivClignotantePilot"+count.toString()+"'></span>";
+		document.getElementById("decal_spect"+count.toString()).title = texte.pages_trajectoire.decalageSpec_EnergyReserve;
 		document.getElementById("v_total"+count.toString()+"").innerHTML = texte.pages_trajectoire.v_total;
 
 	}
@@ -630,7 +634,8 @@ function texteTrajectoireMassiveNonBar(nbrderockets) {
 		document.getElementById("temps_ecoule"+count.toString()+"").innerHTML = texte.pages_trajectoire.temps_ecoule;
 		document.getElementById("acceleration"+count.toString()+"").innerHTML ="Gradient &nbsp;<span id='DivClignotante"+count.toString()+"'></span>";
 		document.getElementById("temps_obs"+count.toString()+"").innerHTML = texte.pages_trajectoire.temps_obs;
-		document.getElementById("decal_spect"+count.toString()+"").innerHTML = texte.pages_trajectoire.decal_spect;
+		document.getElementById("decal_spect"+count.toString()+"").innerHTML = texte.pages_trajectoire.decal_spect+"&nbsp;<span id='DivClignotantePilot"+count.toString()+"'></span>";
+		document.getElementById("decal_spect"+count.toString()).title = texte.pages_trajectoire.decalageSpec_EnergyReserve;
 		document.getElementById("v_total"+count.toString()+"").innerHTML = texte.pages_trajectoire.v_total;
 	}
 	var canvaswidthheightt = document.getElementById("canvaswidthheight").value;
@@ -688,7 +693,8 @@ function texteTrajectoireMassiveKerr() {
 	document.getElementById("acceleration").innerHTML = texte.pages_trajectoire.acceleration;
 	document.getElementById("temps_obs").innerHTML = texte.pages_trajectoire.temps_obs;
 	document.getElementById("boutton_recup").innerHTML = texte.pages_trajectoire.boutton_recup;
-	document.getElementById("decal_spect").innerHTML = texte.pages_trajectoire.decal_spect;
+	document.getElementById("decal_spect").innerHTML = texte.pages_trajectoire.decal_spect+"&nbsp;<span id='DivClignotantePilot'></span>";
+	document.getElementById("decal_spect").title = texte.pages_trajectoire.decalageSpec_EnergyReserve;
 	document.getElementById("v_total").innerHTML = texte.pages_trajectoire.v_total;
 	//document.getElementById("ouvreengrand").innerHTML = texte.pages_trajectoire.ouvreengrand;
 }
@@ -712,8 +718,9 @@ function texteTrajectoireMassiveKerrGrand() {
 	document.getElementById("acceleration").innerHTML = texte.pages_trajectoire.acceleration;
 	document.getElementById("temps_obs").innerHTML = texte.pages_trajectoire.temps_obs;
 	document.getElementById("boutton_recup").innerHTML = texte.pages_trajectoire.boutton_recup;
-	document.getElementById("decal_spect").innerHTML = texte.pages_trajectoire.decal_spect;
-}
+	document.getElementById("decal_spect").innerHTML = texte.pages_trajectoire.decal_spect+"&nbsp;<span id='DivClignotantePilot'></span>";
+	document.getElementById("decal_spect").title = texte.pages_trajectoire.decalageSpec_EnergyReserve;
+	}
 
 function texteTrajectoirePhotonKerr() {
 	var texte = o_recupereJson();

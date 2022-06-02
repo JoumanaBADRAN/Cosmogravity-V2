@@ -57,7 +57,7 @@ expl5.src='./Images/explose/expl5.png';
 expl6.src='./Images/explose/expl6.png';
 
 
-///varible global pour les calcules
+///variable global pour les calcules
 var c = 299792458;
 var G = 6.6742 * Math.pow(10, -11);
 
@@ -279,6 +279,10 @@ function genereHtml(){
 
 	//jstring +='<th class="tg-6l4m" title="grav en g">$grav=\\frac{GM}{R^{2}}\\frac{1}{9.81}(g)$</th>';
 	jstring +='<th class="tg-6l4m" id="gravtxt" title="">$grav=\\frac{GM}{R^{2}}\\frac{1}{9.81}(g)$</th>';
+	jstring +='<th class="tg-6l4m" id="vitesseLibéra" title="">$Vlib=c(\\frac{rs}{R})^{1/2} $</th>';
+	jstring +='<th class="tg-6l4m" id="gravSurface" title="">$gravS=\\frac{1}{2}c^{2}(\\frac{rs}{R^{2}})$</th>';
+	jstring +='<th class="tg-6l4m" id="TempTrouNoirtxt" title="">$T=6.15*10^{-8}\\frac{Msoleil}{M}(K)$</th>';
+	jstring +='<th class="tg-6l4m" id="tempsEvaporationTrouNoirtxt" title="">$t=6.6*10^{74}\\frac{M}{Msoleil}(s)$</th>';
 	jstring +='</tr>';
 
 	newRow.innerHTML = jstring;
@@ -295,34 +299,38 @@ function genereHtml(){
 
 	jstring +='<td class="tg-3ozo" id="m">0</td>';
 	jstring +='<td class="tg-3ozo" id="g">0</td>';
+	jstring +='<td class="tg-3ozo" id="Vlib">0</td>';
+	jstring +='<td class="tg-3ozo" id="gravS">0</td>';
+	jstring +='<td class="tg-3ozo" id="TempTN">0</td>';
+	jstring +='<td class="tg-3ozo" id="tempsEvapTN">0</td>';
 	jstring +='</tr>';
 	newRow2.innerHTML = jstring;
 
+	element2=document.getElementById('traject_type2');
 	for (countt = 1; countt <= nbredefuseesgenere; countt += 1) {
 		var newRow=document.getElementById('tableauresultatsimu').insertRow();
 		// il faudrait songer a la sécurité ici, 'never trust user input', serait il possible pour un utilisateur de prendre le controle avec ses user input?
 		newRow.innerHTML = `<tr id="tg2gga`+countt.toString()+`">
-						<th class="tg-aicv">r(m)</th>
-						<th id="temps_ecoule`+countt.toString()+`" class="tg-aicv"></th>
-						<th id="acceleration`+countt.toString()+`" title="" class="tg-6l4m"></th>
-						<th id="vitesseur`+countt.toString()+`" title="" class="tg-aicv"  >V<SUB>r</SUB>(m.s<sup>-1</sup>) </th>
-						<th id="vitesseuphi`+countt.toString()+`" title="" class="tg-aicv"  >V<SUB>&phi;</SUB>(m.s<sup>-1</sup>)</th>
-						<th id="temps_obs`+countt.toString()+`" class="tg-aicv"></th>
-						<th id="decal_spect`+countt.toString()+`" title="" class="tg-aicv"></th>
-						<th id="v_total`+countt.toString()+`" title="" class="tg-aicv"></th>`;
+		<th class="tg-aicv">r(m)</th>
+		<th id="temps_ecoule`+countt.toString()+`" class="tg-aicv"></th>
+		<th id="acceleration`+countt.toString()+`" title="" class="tg-6l4m"></th>
+		<th id="vitesseur`+countt.toString()+`" title="" class="tg-aicv"  >V<SUB>r</SUB>(m.s<sup>-1</sup>) </th>
+		<th id="vitesseuphi`+countt.toString()+`" title="" class="tg-aicv"  >V<SUB>&phi;</SUB>(m.s<sup>-1</sup>)</th>
+		<th id="temps_obs`+countt.toString()+`" class="tg-aicv"></th>
+		<th id="decal_spect`+countt.toString()+`" title="" class="tg-aicv"></th>
+		<th id="v_total`+countt.toString()+`" title="" class="tg-aicv"></th>`;
 
-						
 		var newRow2=document.getElementById('tableauresultatsimu').insertRow();
 
 		newRow2.innerHTML = `<tr id="tg2ggb`+countt.toString()+`">
-							<td class="tg-3ozo" id="r_par`+countt.toString()+`">res</td>
-							<td class="tg-3ozo" id="tp`+countt.toString()+`">res</td>
-							<td class="tg-3ozo" id="ga`+countt.toString()+`">res</td>
-							<td class="tg-3ozo" id="vr_sc_mas`+countt.toString()+`">res</td>
-							<td class="tg-3ozo" id="vp_sc_mas`+countt.toString()+`">res</td>
-							<td class="tg-3ozo" id="to`+countt.toString()+`">res</td>
-							<td class="tg-3ozo" id="decal`+countt.toString()+`">res</td>
-							<td class="tg-3ozo" id="v_tot`+countt.toString()+`">res</td>`;
+		<td class="tg-3ozo" id="r_par`+countt.toString()+`">res</td>
+		<td class="tg-3ozo" id="tp`+countt.toString()+`">res</td>
+		<td class="tg-3ozo" id="ga`+countt.toString()+`">res</td>
+		<td class="tg-3ozo" id="vr_sc_mas`+countt.toString()+`">res</td>
+		<td class="tg-3ozo" id="vp_sc_mas`+countt.toString()+`">res</td>
+		<td class="tg-3ozo" id="to`+countt.toString()+`">res</td>
+		<td class="tg-3ozo" id="decal`+countt.toString()+`">res</td>
+		<td class="tg-3ozo" id="v_tot`+countt.toString()+`">res</td>`;
 
 	}
 
@@ -409,12 +417,14 @@ function initialisation(compteur){
 	if(teta1==90){vr=0;}
 	L = vphi * r0 / c;
 	
+	deltam_sur_m = 0;
+
 	document.getElementById("L"+compteur.toString()).innerHTML = L.toExponential(3);
 	document.getElementById("E"+compteur.toString()).innerHTML = E.toExponential(3);
 	document.getElementById("m").innerHTML = rs.toExponential(3);
 
 	scale_factor = Number(document.getElementById("scalefactor").value);
-	mobile = { r0:r0, vphi:vphi, vr:vr, L:L, E:E , phi0:phi0 }; 
+	mobile = { r0:r0, vphi:vphi, vr:vr, L:L, E:E , phi0:phi0 , deltam_sur_m:deltam_sur_m }; 
 
 	mobile["pointsvg"]="pointg"+compteur.toString();
 	mobile["graphesvg"]="#grsvg_"+compteur.toString();
@@ -454,6 +464,32 @@ function initialisation(compteur){
 	else{
 		document.getElementById("g").innerHTML=g.toExponential(2);
 	}
+
+	//vitesse de libération
+	Vlib=c*Math.pow(rs/r_phy,1/2);
+	if(r_phy>=rs){
+		document.getElementById("Vlib").innerHTML=Vlib.toExponential(2);
+		}
+	else{document.getElementById("Vlib").innerHTML=" ";}
+	
+	//calcul de la gravité de surface
+	gravS=(1/2*Math.pow(c,2)*rs)/Math.pow(r_phy,2);
+	if(r_phy>=rs){
+	document.getElementById("gravS").innerHTML=gravS.toExponential(2);
+	}
+	else{document.getElementById("gravS").innerHTML=" ";}
+
+	// Rayonnement de Hawking d’un trou noir
+
+	// 1. calcul température du trou noir
+	M_soleil = 1.989e30						;		//masse du soleil en kg
+	Temp_trouNoir = 6.5e-8 * M_soleil/M		;		//en Kelvin
+	document.getElementById("TempTN").innerHTML=Temp_trouNoir.toExponential(5);
+
+	// 2. calcul temps d'évaporation de Hawking (calcul simplifié)
+	tempsEvaporation_trouNoir = 6.6e74 * ((M_soleil/M)**3); 		//en secondes
+	document.getElementById("tempsEvapTN").innerHTML=tempsEvaporation_trouNoir.toExponential(5);
+
 	//pour l'affichage sur le graph avec les condition initiale
 	if (compteur==1){
 		vphiblab=v0;
@@ -539,9 +575,9 @@ function trajectoire(compteur,mobile) {
 		document.getElementById('r_phy').disabled = true;
 		document.getElementById('nombredefusees').disabled = true;
 
+		//joystick
 		var blyo = Number(document.getElementById("nombredefusees").value);
 
-		//joystick
 		element2=document.getElementById('traject_type2');
 		if(blyo == 1 && element2.value == "mobile") { 	
 			document.getElementById("joyDiv").style.visibility='visible'; }
@@ -703,25 +739,33 @@ function trajectoire(compteur,mobile) {
 
 	if(blyo == 1) {
 	setInterval(function(){
-		if(joy.GetY()<0){
-			Delta_L=-joy.GetY()/1e4*mobile.L; //console.log("835 mobile.L mobile.r_part",mobile.L,mobile.r_part);
-		 	mobile.L=mobile.L+Delta_L ;
-			Delta_E=(1-rs/mobile.r_part)*mobile.L*Delta_L/mobile.E/Math.pow(mobile.r_part,2);
-			mobile.E=mobile.E+Delta_E; 
-			deltam_sur_m = deltam_sur_m + Math.abs(Delta_E/mobile.E);
-			document.getElementById("E"+compteur.toString()).innerHTML = mobile.E.toExponential(10);
-			document.getElementById("L"+compteur.toString()).innerHTML = mobile.L.toExponential(10);
-		}
 		
-		else if(joy.GetY()>0){
-			Delta_L=-joy.GetY()/1e4*mobile.L;
-			mobile.L=mobile.L+Delta_L ;
-			Delta_E=(1-rs/mobile.r_part)*mobile.L*Delta_L/mobile.E/Math.pow(mobile.r_part,2) ;
-			mobile.E=mobile.E+Delta_E; 
-			deltam_sur_m = deltam_sur_m + Math.abs(Delta_E/mobile.E);
-			document.getElementById("E"+compteur.toString()).innerHTML = mobile.E.toExponential(10);
-			document.getElementById("L"+compteur.toString()).innerHTML = mobile.L.toExponential(10);
+		if(joy.GetY()<0){
+			while (deltam_sur_m < 0.5) { 					// tant que la réserve d'énergie est inférieur à 50%, on peut piloter
+				Delta_L=-joy.GetY()/((1e-12)*mobile.r0/rs)*mobile.E; //console.log("835 mobile.L mobile.r_part",mobile.L,mobile.r_part);
+				mobile.L=mobile.L+Delta_L ;
+				Delta_E=(1-rs/mobile.r_part)*mobile.L*Delta_L/mobile.E/Math.pow(mobile.r_part,2);
+				mobile.E=mobile.E+Delta_E; 
+				deltam_sur_m = deltam_sur_m + Math.abs(Delta_E/mobile.E);
+				document.getElementById("E"+compteur.toString()).innerHTML = mobile.E.toExponential(10);
+				document.getElementById("L"+compteur.toString()).innerHTML = mobile.L.toExponential(10);
+				document.getElementById("decal").innerHTML = deltam_sur_m.toExponential(1);
+			} 
 		}
+
+		else if(joy.GetY()>0){
+			while (deltam_sur_m < 0.5) { 					// tant que la réserve d'énergie est inférieur à 50%, on peut piloter
+				Delta_L=-joy.GetY()/((1e-12)*mobile.r0/rs)*mobile.E;
+				mobile.L=mobile.L+Delta_L ;
+				Delta_E=(1-rs/mobile.r_part)*mobile.L*Delta_L/mobile.E/Math.pow(mobile.r_part,2) ;
+				mobile.E=mobile.E+Delta_E; 
+				deltam_sur_m = deltam_sur_m + Math.abs(Delta_E/mobile.E);
+				document.getElementById("E"+compteur.toString()).innerHTML = mobile.E.toExponential(10);
+				document.getElementById("L"+compteur.toString()).innerHTML = mobile.L.toExponential(10);
+				document.getElementById("decal").innerHTML = deltam_sur_m.toExponential(1);
+			}
+		}
+														// fin du while, réserve d'énergie finie = plus possible de piloter
 		}, 50); }
 		
 
@@ -899,25 +943,36 @@ function animate(compteur,mobile,mobilefactor) {
 
 	if (mobile.r0 != 0.0) {
 		if (element2.value != "mobile"){  //observateur
-			val_obs = rungekutta_obs(mobile.E,mobile.L,mobile.dtau, mobile.r_part_obs, mobile.A_part_obs);
-			mobile.r_part_obs = val_obs[0];
+
+			//dt = mobile.temps_chute_libre; 			// initialisation dt temps de l'obs lointain
+			//dtau = dt/( mobile.E / (1-(rs/mobile.r_part_obs)) ); 		// calcul de dtau de chaque mobile
+
+			dt = mobile.dtau * ( mobile.E / (1-(rs/mobile.r_part_obs)) );		// initialisation dt temps de l'obs lointain
+
+			val_obs = rungekutta_obs(mobile.E,mobile.L,dt, mobile.r_part_obs, mobile.A_part_obs);
+			mobile.r_part_obs = val_obs[0]; 		// r
 			if(mobile.r_part_obs<rs*1.0001) { mobile.r_part_obs=rs;}
-			mobile.A_part_obs = val_obs[1];
+			mobile.A_part_obs = val_obs[1]; 		// dr/dt
 
 			resultat=calculs.MSC_Ex_vitess(mobile.E,mobile.L,mobile.r_part_obs,rs,false);        /// voir fichier fonctions.js
 			vtotal=resultat[0];
 			vr_1_obs=resultat[1]*Math.sign(mobile.A_part_obs);
 			vp_1_obs=resultat[2];
 			if(mobile.r_part_obs<=rs){vtotal=c;}
-			varphi_obs = c * mobile.L * mobile.dtau*(1-rs/mobile.r_part_obs) / Math.pow(mobile.r_part_obs, 2)/mobile.E; 
+			varphi_obs = c * mobile.L * mobile.dtau *(1-rs/mobile.r_part_obs) / Math.pow(mobile.r_part_obs, 2)/mobile.E; 
 			mobile.phi_obs=mobile.phi_obs+varphi_obs;
 			mobile.position.posX2 = mobilefactor[compteur] * mobile.r_part_obs * (Math.cos(mobile.phi_obs) / mobile.rmax) + (canvas.width / 2.);
 			mobile.position.posY2 = mobilefactor[compteur] * mobile.r_part_obs * (Math.sin(mobile.phi_obs) / mobile.rmax) + (canvas.height / 2.);
 		}
 		else{   // spationaute
+
+			// dtau = mobile.r0/(Math.sqrt(vrobs*vrobs+vphiobs*vphiobs)+1e-10)/1e3;
+			// mobile["dtau"] = dtau;
+			// mobile.dt = mobile.dt/mobile.dtau ;
+
 			val = rungekutta(mobile.L,mobile.dtau, mobile.r_part, mobile.A_part);
 			mobile.r_part = val[0];
-			mobile.A_part = val[1];
+			mobile.A_part = val[1]; 		// dr/dtau
 			resultat=calculs.MSC_Ex_vitess(mobile.E,mobile.L,mobile.r_part,rs,false); /// voir fichier fonctions.js
 			vtotal=resultat[0];
 			vr_1=resultat[1]*Math.sign(mobile.A_part);
@@ -930,7 +985,7 @@ function animate(compteur,mobile,mobilefactor) {
 															 
 //Tracé de la particule
 
-    if (element2.value != "mobile"){
+    if (element2.value != "mobile"){ 					//observateur distant
 		if (mobile.r_part_obs >= rs){
 			//on dessine le trace
 			context.beginPath();
@@ -952,7 +1007,7 @@ function animate(compteur,mobile,mobilefactor) {
 			mobile["context22"].fill();
     	}
     }
-	else{
+	else{ 												//spationaute
 		context.beginPath();
 		context.fillStyle = mobile.couleur;
 		context.rect(mobile.positionspatio.posX1, mobile.positionspatio.posY1, 1, 1);
@@ -1123,16 +1178,17 @@ function animate(compteur,mobile,mobilefactor) {
 
 //decalage spectral
 	if (element2.value != "mobile"){  // observateur
-		//z_obs=Math.pow(1-((vr_1_obs*vr_1_obs + vp_1_obs*vp_1_obs)/(c*c)),(-1/2))*Math.pow(1-rs/mobile.r_part_obs,-(1/2)) -1;
-		//z_obs=(1+Math.abs(vr_1_obs)/c)/(1-(vtotal/c)**2)**(1/2)*(1-rs/mobile.r_part_obs)**(-1/2)-1;
-		    z_obs= (1+Math.abs(vr_1_obs)/c)*Math.pow(1-((vr_1_obs*vr_1_obs + vp_1_obs*vp_1_obs)/(c*c)),(-1/2))*Math.pow(1-rs/mobile.r_part_obs,-(1/2)) -1 ;
 
-		document.getElementById("decal"+compteur.toString()).innerHTML=z_obs.toExponential(5);
-		
-		if(mobile.r_part_obs<=rs){document.getElementById("decal"+compteur.toString()).innerHTML=1/0;}
+		if(mobile.r_part_obs>rs*1.0001){
+			z_obs= Math.pow(1-((vr_1_obs*vr_1_obs + vp_1_obs*vp_1_obs)/(c*c)),(-1/2))*Math.pow(1-rs/mobile.r_part_obs,-(1/2))-1 ;
+		}
+		else{
+			z_obs=1/0; 				//infinity
+		}
+		document.getElementById("decal"+compteur.toString()).innerHTML=z_obs.toExponential(3);
 	}
-	else{
-		document.getElementById("decal"+compteur.toString()).innerHTML="";
+	else{ 							// spationaute
+		document.getElementById("decal"+compteur.toString()).innerHTML=deltam_sur_m.toExponential(1);
 	}
 
 //  Les différents "temps" et autres valeurs à afficher
@@ -1176,18 +1232,19 @@ function animate(compteur,mobile,mobilefactor) {
 		}
 	}
 
-	if (element2.value != "mobile"){
+	if (element2.value != "mobile"){ 	// observateur
 		mobile.temps_observateur += mobile.dtau;
-		document.getElementById("to"+compteur.toString()).innerHTML = mobile.temps_observateur.toExponential(3);
+		document.getElementById("to"+compteur.toString()).innerHTML = mobile.temps_observateur.toExponential(1);
 	}
-	else{
-		if(mobile.r_part > rs*1.0001) {
+	else{ 								// spationaute
+/* 		if(mobile.r_part > rs*1.0001) {
 			mobile.temps_observateur+=mobile.E/(1-rs/mobile.r_part)*mobile.dtau;
 		}
 		else{ 
 			mobile.temps_observateur= 1/0;    // infini																		
-		}
-		document.getElementById("to"+compteur.toString()).innerHTML = mobile.temps_observateur.toExponential(3);
+		} */
+		mobile.temps_observateur += mobile.dtau;
+		document.getElementById("to"+compteur.toString()).innerHTML = mobile.temps_observateur.toExponential(1);
 	}
 	
 //  Gestion de la diode gradient accélération
@@ -1205,6 +1262,25 @@ function animate(compteur,mobile,mobilefactor) {
 			document.getElementById('DivClignotante'+compteur.toString()).style.color = "red";
 		} 
 	}
+
+//  Gestion de la diode réserve d'énergie
+if (element2.value == "mobile"){
+	if (Number(deltam_sur_m) <= 0.3) {
+		document.getElementById('DivClignotantePilot'+compteur.toString()).innerHTML = " <img src='./Images/diodever.gif' height='14px' />";
+		document.getElementById('DivClignotantePilot'+compteur.toString()).style.color = "green";
+	} 
+	else if (0.3 < Number(deltam_sur_m) && Number(deltam_sur_m) < 0.5) {
+		document.getElementById('DivClignotantePilot'+compteur.toString()).innerHTML = " <img src='./Images/diodejaune.gif' height='14px' />";
+		document.getElementById('DivClignotantePilot'+compteur.toString()).style.color = "yellow";
+	} 
+	else if (Number(deltam_sur_m) >= 0.5) {
+		document.getElementById('DivClignotantePilot'+compteur.toString()).innerHTML = " <img src='./Images/dioderouge.gif' height='14px' />";
+		document.getElementById('DivClignotantePilot'+compteur.toString()).style.color = "red";
+	} 
+}	
+	
+
+	
 	
 }    // fin r0!=0
 

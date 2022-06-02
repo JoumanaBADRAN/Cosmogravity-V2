@@ -157,6 +157,12 @@ function trajectoire() {
 		document.getElementById('teta').disabled = true;
 		document.getElementById('phi0').disabled = true;
 
+		//joystick
+
+		element2=document.getElementById('traject_type2');
+		if(element2.value == "mobile") { 	
+			document.getElementById("joyDiv").style.visibility='visible'; }
+
 		//empecher de passer d'observateur a mobile ou inversement pendant la simulation
 		document.getElementById('r3').disabled = true;
 		document.getElementById('r4').disabled = true;
@@ -191,6 +197,7 @@ function trajectoire() {
 		temps_particule = 0;
 		temps_observateur = 0;
 		bool = true;
+		deltam_sur_m = 0;
 
 	
 
@@ -260,6 +267,37 @@ function trajectoire() {
 		document.getElementById('bouton_pause').addEventListener('click', function() {
 			pausee();
 		}, false);
+
+	setInterval(function(){
+		
+		if(joy.GetY()<0){
+			while (deltam_sur_m < 0.5) { 					// tant que la réserve d'énergie est inférieur à 50%, on peut piloter
+				Delta_L=-joy.GetY()/(100*r0/rs)*L; 
+				L=L+Delta_L ;
+				Delta_E=(1-rs/r_part)*L*Delta_L/E/Math.pow(r_part,2);
+				E=E+Delta_E; 
+				deltam_sur_m = deltam_sur_m + Math.abs(Delta_E/E);
+				document.getElementById("E").innerHTML = E.toExponential(10);
+				document.getElementById("L").innerHTML = L.toExponential(10);
+				document.getElementById("decal").innerHTML = deltam_sur_m.toExponential(1);
+			} 
+		}
+
+		else if(joy.GetY()>0){
+			while (deltam_sur_m < 0.5) { 					// tant que la réserve d'énergie est inférieur à 50%, on peut piloter
+				Delta_L=-joy.GetY()/(100*r0/rs)*L;
+				L=L+Delta_L ;
+				Delta_E=(1-rs/r_part)*L*Delta_L/E/Math.pow(r_part,2) ;
+				E=E+Delta_E; 
+				deltam_sur_m = deltam_sur_m + Math.abs(Delta_E/E);
+				document.getElementById("E").innerHTML = E.toExponential(10);
+				document.getElementById("L").innerHTML = L.toExponential(10);
+				document.getElementById("decal").innerHTML = deltam_sur_m.toExponential(1);
+			}
+		}
+														// fin du while, réserve d'énergie finie = plus possible de piloter
+		}, 50);
+
 
 	//Gestion des bouttons accélerer et decélerer																 
 		document.getElementById('plusvite').addEventListener('click', function() {
@@ -494,14 +532,19 @@ function animate() {
 	}
 
 	// Decalage spectral
+		//z_obs=Math.pow(1-((vr_1_obs*vr_1_obs + vp_1_obs*vp_1_obs)/(c*c)),(-1/2))*Math.pow(1-rs/mobile.r_part_obs,-(1/2)) -1;
+		//z_obs=(1+Math.abs(vr_1_obs)/c)/(1-(vtotal/c)**2)**(1/2)*(1-rs/mobile.r_part_obs)**(-1/2)-1;
 	if (element2.value != "mobile"){
-		//z_obs=Math.pow(1-((vr_3_obs*vr_3_obs+ vp_3_obs* vp_3_obs)/(c*c)),(-1/2))*Math.pow(1-rs*r_part_obs/(r_part_obs*r_part_obs + a*a),-(1/2))-1;
-		z_obs=(1+vr_3_obs/c)/((1-(vtot/c)**2)**(1/2))*(1-rs/r_part_obs)**(-1/2)-1;
+		pvr=0;//pvr c'est la projection de la vitesse totale sur la direction de l'observateur ici = 0 car on a prit l'observateur est perpendiculaire au plan de mouvement du mobile
+		if(r_part_obs<rs){
+		   z_obs= 1/0;
+		  }	
+		else{z_obs=(1+pvr/c)/((1-(vtot/c)**2)**(1/2))*(1-rs/r_part_obs)**(-1/2)-1;}
 		document.getElementById("decal").innerHTML=z_obs.toExponential(3)
-		if(isNaN(z_obs)){document.getElementById("decal").innerHTML="";}
 	}
-	else{
-		document.getElementById("decal").innerHTML="";
+
+	else{ 							// spationaute
+		document.getElementById("decal").innerHTML=deltam_sur_m.toExponential(1);
 	}
 
     // gradient d'accélération
@@ -586,7 +629,22 @@ function animate() {
 			document.getElementById('DivClignotante').innerHTML = texte.pages_trajectoire.erreur;
 			document.getElementById('DivClignotante').style.color = "blue";
 		}
-    } 
+    }
+	//  Gestion de la diode réserve d'énergie
+	if (element2.value == "mobile"){
+		if (Number(deltam_sur_m) <= 0.3) {
+			document.getElementById('DivClignotantePilot').innerHTML = " <img src='./Images/diodever.gif' height='14px' />";
+			document.getElementById('DivClignotantePilot').style.color = "green";
+		} 
+		else if (0.3 < Number(deltam_sur_m) && Number(deltam_sur_m) < 0.5) {
+			document.getElementById('DivClignotantePilot').innerHTML = " <img src='./Images/diodejaune.gif' height='14px' />";
+			document.getElementById('DivClignotantePilot').style.color = "yellow";
+		} 
+		else if (Number(deltam_sur_m) >= 0.5) {
+			document.getElementById('DivClignotantePilot').innerHTML = " <img src='./Images/dioderouge.gif' height='14px' />";
+			document.getElementById('DivClignotantePilot').style.color = "red";
+		} 
+	}	
     
 }     //  fin r0!=0
 

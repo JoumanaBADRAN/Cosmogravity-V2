@@ -56,6 +56,7 @@
 		<script src="./js/Langues/gestion_langues.js"></script>
 		<script src="./js/Simulation_Trajectoires/fonctions.js"></script>
 		<script src="./js/Graphisme/trajectoires.js"></script>  
+		<script src="./js/Simulation_Trajectoires/joy.js"></script>  
 
 		<!-- Pour enregistrer le graphe et le tracé -->
 		<script src="./Lib/saveSvgAsPng.js"></script>
@@ -244,6 +245,9 @@
 			</span>
 		</div>
 
+		<div id="cccccccc">
+		<div id="joyDiv" style="width:130px;height:130px" ></div></div>
+
 		<!-- Scripts pour resize et tracer du graphique au chargement + chargement du menu-->
 		<script src="js/Graphisme/Menu/nav.jquery.min.js"></script>
 
@@ -265,6 +269,13 @@
 			document.getElementById('traject_type').value="complete";
 			save_nbfusees();
 		</script>
+
+		<script type="text/javascript">
+		//joystick
+		// Create JoyStick object into the DIV 'joyDiv'
+		var joy = new JoyStick('joyDiv');
+		</script>
+
 		<span id="enregistrer2"></span>
 		<a id="idouvreengrand" type="hidden" href="Simulation_trajectoire_inter_en_grand.html" target="_blank"><a/>
 	</body>

@@ -96,4 +96,8 @@ var calculs = calculs || (function() {
         }
     }
 
-})();
+})()
+
+console.log("hello");
+
+console.log(calculs.MSC_Ex_vitess(40,5,50,9,true));

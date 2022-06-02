@@ -229,7 +229,11 @@ function genereHtml(){
     //pour katex il faux mettre un antislash devant le antislash 
         jstring +='<th class="tg-6l4m" id="rayonschwars"  title="" >$rs=\\frac{2GM}{c^{2}}(m)$</th>';
 		jstring +='<th class="tg-6l4m" id="gravtxt" title="">$grav=\\frac{GM}{R^{2}}\\frac{1}{9.81}(g)$</th>';
-        jstring +='</tr>';
+		jstring +='<th class="tg-6l4m" id="vitesseLibéra" title="">$Vlib=c(\\frac{rs}{R})^{1/2} $</th>';
+        jstring +='<th class="tg-6l4m" id="gravSurface" title="">$gravS=\\frac{1}{2}c^{2}(\\frac{rs}{R^{2}})$</th>';
+		jstring +='<th class="tg-6l4m" id="TempTrouNoirtxt" title="">$T=6.15*10^{-8}\\frac{Msoleil}{M}(K)$</th>';
+		jstring +='<th class="tg-6l4m" id="tempsEvaporationTrouNoirtxt" title="">$t=6.6*10^{74}\\frac{M}{Msoleil}(s)$</th>';
+		jstring +='</tr>';
 
         newRow.innerHTML = jstring;
 
@@ -245,7 +249,11 @@ function genereHtml(){
 		}
 
         jstring +='<td class="tg-3ozo" id="m">0</td>';
-		jstring +='<td class="tg-3ozo" id="g">0</td>';														
+		jstring +='<td class="tg-3ozo" id="g">0</td>';	
+		jstring +='<td class="tg-3ozo" id="Vlib">0</td>';	
+		jstring +='<td class="tg-3ozo" id="gravS">0</td>';	
+		jstring +='<td class="tg-3ozo" id="TempTN">0</td>';
+		jstring +='<td class="tg-3ozo" id="tempsEvapTN">0</td>';											
         jstring +='</tr>';
 
         newRow2.innerHTML = jstring;
@@ -379,7 +387,6 @@ function initialisation(compteur){
 
 	document.getElementById("L"+compteur.toString()).innerHTML = L.toExponential(3);
 	document.getElementById("E"+compteur.toString()).innerHTML = E.toExponential(3);
-	
 	document.getElementById("m").innerHTML = rs.toExponential(3);
 
 	scale_factor = Number(document.getElementById("scalefactor").value);
@@ -424,9 +431,47 @@ function initialisation(compteur){
 	}
 	else{
 		document.getElementById("g").innerHTML=g.toExponential(2);
-	}				  
+	}		
+	
+
+		// Rayonnement de Hawking d’un trou noir
+
+	// 1. calcul température du trou noir
+	M_soleil = 1.989e30						;		//masse du soleil en kg
+	Temp_trouNoir = 6.5e-8 * M_soleil/M		;		//en Kelvin
+	document.getElementById("TempTN").innerHTML=Temp_trouNoir.toExponential(5);
+
+	// 2. calcul temps d'évaporation de Hawking (calcul simplifié)
+	tempsEvaporation_trouNoir = 6.6e74 * ((M_soleil/M)**3); 		//en secondes
+	document.getElementById("tempsEvapTN").innerHTML=tempsEvaporation_trouNoir.toExponential(5);
+
+	// calcule de vitesse de liberation 
+	Vlib=c*Math.pow(rs/r_phy,1/2);
+	if(r_phy>=rs){
+	  document.getElementById("Vlib").innerHTML=Vlib.toExponential(2);
+	}
+	else{document.getElementById("Vlib").innerHTML=" ";}
+	//calcul de la gravité de surface
+	gravS=1/2*Math.pow(c,2)*rs/r_phy;
+	if(r_phy>=rs){
+	  document.getElementById("gravS").innerHTML=gravS.toExponential(2);
+	}
+	else{document.getElementById("gravS").innerHTML=" ";}
 	return mobile;
 }  // fin fonction initialisation
+//vitesse de libération
+Vlib=c*Math.pow(rs/r_phy,1/2);
+if(r_phy>=rs){
+	document.getElementById("Vlib").innerHTML=Vlib.toExponential(2);
+  }
+  else{document.getElementById("Vlib").innerHTML=" ";}
+
+//calcul de la gravité de surface
+  gravS=1/2*Math.pow(c,2)*rs/r_phy;
+  if(r_phy>=rs){
+	document.getElementById("gravS").innerHTML=gravS.toExponential(2);
+  }
+  else{document.getElementById("gravS").innerHTML=" ";}
 
 function verifnbr() {//fonction qui affiche un message d'erreur si des valeurs ne sont pas donnée dans l'une des cases
   
@@ -1456,6 +1501,7 @@ function creation_blocs(context,mobilefactor,rmaxjson,r0ou2,compteur){
 	context.lineTo(600+((r1bis*10**testnum(r2bis))*mobilefactor[cle])/r0ou2,115);
 	// Fermeture du chemin (facultative)
 	context.stroke();
-
+	
+	
 }
 
