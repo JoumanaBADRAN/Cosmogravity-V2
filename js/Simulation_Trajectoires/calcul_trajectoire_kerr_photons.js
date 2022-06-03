@@ -72,7 +72,6 @@ function initialisation(){
 	a = J / (c * M);
 	m = G * M / Math.pow(c, 2); //moitié du rayon de Schwarzchild
 	rs = 2 * G * M / Math.pow(c, 2);
-	//console.log(a);
 	
 	vr=c*Math.cos(teta*Math.PI/180)*Math.sqrt(delta(r0)/(r0*(r0-rs)));
 	vphi=c*Math.sin(teta*Math.PI/180)*r0/Math.sqrt(delta(r0));
@@ -100,7 +99,6 @@ function initialisation(){
 	else { document.getElementById("rhm").innerHTML = rhm.toExponential(3);;}
 
 	document.getElementById("gravS").innerHTML = gravSurface.toExponential(3);
-
 }
 
 function verifnbr() {
