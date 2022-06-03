@@ -150,7 +150,7 @@ function Calc() {
 	yrunge2 = 1;
 	data_x = [];
 	data_y = [];
-	while (yrunge2 > amin && yrunge2 < amax) {
+	while (yrunge2 >= amin && yrunge2 <= amax) {
 		yrunge2 = rungekutta_neg(m);
 		ymoinsrunge[0] = ymoinsrunge[1];
 		res = age + m / H0engannee;
@@ -173,7 +173,7 @@ function Calc() {
 	ymoinsrungederiv = [1, 1];
 	k = [0, 0, 0, 0];
 	j = [0, 0, 0, 0];
-	while (yrunge > amin && yrunge < amax) { // permet de boucler sur une valeur de reference
+	while (yrunge >= amin && yrunge <= amax) { // permet de boucler sur une valeur de reference
 		yrunge = rungekutta(i); //position f(x) Runge-Kutta
 		if (yrunge > 0) {
 			data_x.push(age + i / H0engannee);
@@ -181,7 +181,51 @@ function Calc() {
 		}
 		i = i + pas;
 	}
-	console.log("184  yrunge ", yrunge);		
+	console.log("184  yrunge ", yrunge);
+	
+	if(amax<1){
+		eps =1e-10;
+		if (omegaDE0 > 1e6 || omegam0 > 1e6) {
+			eps = 0.0001;
+		}
+		initial_a = 0;
+		age_sec = simpson(0, 0.0999999999999, cv_Enoire_temps_substitution, omegam0, Number(omegaDE0), Number(Or), eps);
+		if(isNaN(age_sec)) {
+			modele=1;
+			age_afficher="NaN";  
+		} else {
+			age_sec = age_sec * (1. / H0parsec);
+			//on le passe en gigaannees
+			age = age_sec / ((3600 * 24 * nbrjours) * Math.pow(10, 9));
+			//on creer une variable limite en nombre de decimal pour l'affichage
+			age_afficher = Number(age).toExponential(3);
+			age_sec_afficher = Number(age_sec).toExponential(3);
+		}
+    
+	    ymoinsrunge = [0.1,0.1];
+	    ymoinsrungederiv = [1, 1];
+	    k = [0, 0, 0, 0];
+	    j = [0, 0, 0, 0];
+	    pas = age*5e-6;   if(modele==1){pas=1e-5;age=0;}
+	    m = 0;
+	    yrunge = 1;
+	    yrunge2 = 0.1;
+	    data_x = [];
+	    data_y = [];
+	    while (yrunge2 >= amin && yrunge2 <= amax) {
+		   yrunge2 = rungekutta_neg(m);
+		   ymoinsrunge[0] = ymoinsrunge[1];
+		   res = age + m / H0engannee;
+		   ymoinsrungederiv[0] = ymoinsrungederiv[1];
+		   if (yrunge2 > 0) {
+			data_x.push(age + m / H0engannee);
+			data_y.push(yrunge2);
+	 	}
+		m = m - pas;
+	}
+		
+
+	}
 
 	//liste les differents cas pour afficher a l'utilisateur les informations
 	if (age < 0) {   console.log("187 age<0");
