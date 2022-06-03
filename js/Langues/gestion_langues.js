@@ -223,6 +223,7 @@ function textegravetetc_Kerr(){
 	document.getElementById("rayonschwars").title = texte.pages_trajectoire.rayonschwars;
 	document.getElementById("horizon1").title = texte.pages_trajectoire.horizon1;
 	document.getElementById("horizon2").title = texte.pages_trajectoire.horizon2;
+	document.getElementById("gravSurface").title = texte.pages_trajectoire.gravSurface_BulleInfo;
  	var canvaswidthheightt = document.getElementById("canvaswidthheight").value;
 	if(canvaswidthheightt=="750"){
 		document.getElementById("labelgp").innerHTML = texte.pages_trajectoire.labelgp;
@@ -237,8 +238,7 @@ function textegravetetc(){
 	document.getElementById("TempTrouNoirtxt").title = texte.pages_trajectoire.TempTN;
 	document.getElementById("tempsEvaporationTrouNoirtxt").title = texte.pages_trajectoire.tempsEvapTN;
 	document.getElementById("gravtxt").title = texte.pages_trajectoire.gravtitle;
-	document.getElementById("gravS").title = texte.pages_trajectoire.gravStitle;
-	document.getElementById("Vlib").title = texte.pages_trajectoire.Vlibtitle;
+	document.getElementById("vitesseLibéra").title = texte.pages_trajectoire.Vlibtitle;
 	document.getElementById("ctreastre").title = texte.pages_trajectoire.ctreastre;
 	document.getElementById("rayonschwars").title = texte.pages_trajectoire.rayonschwars;
 	document.getElementById("massetxt").title = texte.pages_trajectoire.massetxt;

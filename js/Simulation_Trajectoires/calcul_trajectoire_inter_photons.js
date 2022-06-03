@@ -230,9 +230,8 @@ function genereHtml(){
         jstring +='<th class="tg-6l4m" id="rayonschwars"  title="" >$rs=\\frac{2GM}{c^{2}}(m)$</th>';
 		jstring +='<th class="tg-6l4m" id="gravtxt" title="">$grav=\\frac{GM}{R^{2}}\\frac{1}{9.81}(g)$</th>';
 		jstring +='<th class="tg-6l4m" id="vitesseLibéra" title="">$Vlib=c(\\frac{rs}{R})^{1/2} $</th>';
-        jstring +='<th class="tg-6l4m" id="gravSurface" title="">$gravS=\\frac{1}{2}c^{2}(\\frac{rs}{R^{2}})$</th>';
 		jstring +='<th class="tg-6l4m" id="TempTrouNoirtxt" title="">$T=6.15*10^{-8}\\frac{Msoleil}{M}(K)$</th>';
-		jstring +='<th class="tg-6l4m" id="tempsEvaporationTrouNoirtxt" title="">$t=6.6*10^{74}\\frac{M}{Msoleil}(s)$</th>';
+		jstring +='<th class="tg-6l4m" id="tempsEvaporationTrouNoirtxt" title="">$t=6.6*10^{74}(\\frac{M}{Msoleil})^{3}(s)$</th>';
 		jstring +='</tr>';
 
         newRow.innerHTML = jstring;
@@ -251,7 +250,6 @@ function genereHtml(){
         jstring +='<td class="tg-3ozo" id="m">0</td>';
 		jstring +='<td class="tg-3ozo" id="g">0</td>';	
 		jstring +='<td class="tg-3ozo" id="Vlib">0</td>';	
-		jstring +='<td class="tg-3ozo" id="gravS">0</td>';	
 		jstring +='<td class="tg-3ozo" id="TempTN">0</td>';
 		jstring +='<td class="tg-3ozo" id="tempsEvapTN">0</td>';											
         jstring +='</tr>';
@@ -431,10 +429,16 @@ function initialisation(compteur){
 	}
 	else{
 		document.getElementById("g").innerHTML=g.toExponential(2);
-	}		
+	}	
 	
-
-		// Rayonnement de Hawking d’un trou noir
+	// calcule de vitesse de liberation 
+	Vlib=c*Math.pow(rs/r_phy,1/2);
+	if(r_phy>=rs){
+		document.getElementById("Vlib").innerHTML=Vlib.toExponential(2);
+	}
+	else{document.getElementById("Vlib").innerHTML=" ";}
+	
+	// Rayonnement de Hawking d’un trou noir
 
 	// 1. calcul température du trou noir
 	M_soleil = 1.989e30						;		//masse du soleil en kg
@@ -442,36 +446,11 @@ function initialisation(compteur){
 	document.getElementById("TempTN").innerHTML=Temp_trouNoir.toExponential(5);
 
 	// 2. calcul temps d'évaporation de Hawking (calcul simplifié)
-	tempsEvaporation_trouNoir = 6.6e74 * ((M_soleil/M)**3); 		//en secondes
+	tempsEvaporation_trouNoir = 6.6e74*((M/M_soleil)**3); 		//en secondes
 	document.getElementById("tempsEvapTN").innerHTML=tempsEvaporation_trouNoir.toExponential(5);
 
-	// calcule de vitesse de liberation 
-	Vlib=c*Math.pow(rs/r_phy,1/2);
-	if(r_phy>=rs){
-	  document.getElementById("Vlib").innerHTML=Vlib.toExponential(2);
-	}
-	else{document.getElementById("Vlib").innerHTML=" ";}
-	//calcul de la gravité de surface
-	gravS=1/2*Math.pow(c,2)*rs/r_phy;
-	if(r_phy>=rs){
-	  document.getElementById("gravS").innerHTML=gravS.toExponential(2);
-	}
-	else{document.getElementById("gravS").innerHTML=" ";}
-	return mobile;
 }  // fin fonction initialisation
-//vitesse de libération
-Vlib=c*Math.pow(rs/r_phy,1/2);
-if(r_phy>=rs){
-	document.getElementById("Vlib").innerHTML=Vlib.toExponential(2);
-  }
-  else{document.getElementById("Vlib").innerHTML=" ";}
 
-//calcul de la gravité de surface
-  gravS=1/2*Math.pow(c,2)*rs/r_phy;
-  if(r_phy>=rs){
-	document.getElementById("gravS").innerHTML=gravS.toExponential(2);
-  }
-  else{document.getElementById("gravS").innerHTML=" ";}
 
 function verifnbr() {//fonction qui affiche un message d'erreur si des valeurs ne sont pas donnée dans l'une des cases
   
@@ -853,6 +832,7 @@ function trajectoire(compteur,mobile) {
 		rafraichir();
 	}, false);
 	document.getElementById("start").innerHTML = texte.pages_trajectoire.bouton_stop;
+	document.getElementById("start").title = texte.pages_trajectoire.bouton_stop_bulleInfo;
 }  // fin fonction trajectoire
 
 

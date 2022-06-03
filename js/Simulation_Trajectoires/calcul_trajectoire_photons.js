@@ -225,9 +225,8 @@ function genereHtml(){
 
 	jstring +='<th class="tg-6l4m" id="gravtxt" title="">$grav=\\frac{GM}{R^{2}}\\frac{1}{9.81}(g)$</th>';		
 	jstring +='<th class="tg-6l4m" id="vitesseLibéra" title="">$Vlib=c(\\frac{rs}{R})^{1/2} $</th>';																															 
-    jstring +='<th class="tg-6l4m" id="gravSurface" title="">$gravS=\\frac{1}{2}c^{2}(\\frac{rs}{R^{2}})$</th>';
 	jstring +='<th class="tg-6l4m" id="TempTrouNoirtxt" title="">$T=6.15*10^{-8}\\frac{Msoleil}{M}(K)$</th>';
-	jstring +='<th class="tg-6l4m" id="tempsEvaporationTrouNoirtxt" title="">$t=6.6*10^{74}\\frac{M}{Msoleil}(s)$</th>';
+	jstring +='<th class="tg-6l4m" id="tempsEvaporationTrouNoirtxt" title="">$t=6.6*10^{74}(\\frac{M}{Msoleil})^{3}(s)$</th>';
 	jstring +='</tr>';
 
           
@@ -246,7 +245,6 @@ function genereHtml(){
 	jstring +='<td class="tg-3ozo" id="m">0</td>';
 	jstring +='<td class="tg-3ozo" id="g">0</td>';
 	jstring +='<td class="tg-3ozo" id="Vlib"></td>';
-	jstring +='<td class="tg-3ozo" id="gravS"></td>';
 	jstring +='<td class="tg-3ozo" id="TempTN">0</td>';
 	jstring +='<td class="tg-3ozo" id="tempsEvapTN">0</td>';
 	jstring +='</tr>';
@@ -400,7 +398,7 @@ function initialisation(compteur){
 	document.getElementById("TempTN").innerHTML=Temp_trouNoir.toExponential(5);
 
 	// 2. calcul temps d'évaporation de Hawking (calcul simplifié)
-	tempsEvaporation_trouNoir = 6.6e74 * ((M_soleil/M)**3); 		//en secondes
+	tempsEvaporation_trouNoir = 6.6e74*((M/M_soleil)**3); 		//en secondes
 	document.getElementById("tempsEvapTN").innerHTML=tempsEvaporation_trouNoir.toExponential(5);
 	
 	// calcule de vitesse de liberation 
@@ -409,12 +407,6 @@ function initialisation(compteur){
 	  document.getElementById("Vlib").innerHTML=Vlib.toExponential(2);
 	}
 	else{document.getElementById("Vlib").innerHTML=" ";}
-	//calcul de la gravité de surface
-	gravS=1/2*Math.pow(c,2)*rs/r_phy;
-	if(r_phy>=rs){
-	  document.getElementById("gravS").innerHTML=gravS.toExponential(2);
-	}
-	else{document.getElementById("gravS").innerHTML=" ";}
 
 	if (compteur==1){
 		vphiblab=c;
@@ -811,6 +803,7 @@ function trajectoire(compteur,mobile) {
 
 	document.getElementById('start').addEventListener('click', function() {rafraichir(); }, false);
 	document.getElementById("start").innerHTML = texte.pages_trajectoire.bouton_stop;
+	document.getElementById("start").title = texte.pages_trajectoire.bouton_stop_bulleInfo;
 }    // fin fonction trajectoire
 
 // tracé de la particule
@@ -989,8 +982,8 @@ function animate(compteur,mobile,mobilefactor) {
 			document.getElementById("ga"+compteur.toString()).innerHTML = '';
 			document.getElementById("r_par"+compteur.toString()).innerHTML = mobile.r_part.toExponential(3);
 			if(mobile.L!=0) { 
-				document.getElementById("vp_sc_mas"+compteur.toString()).innerHTML = 1/0;
-				document.getElementById("vr_sc_mas"+compteur.toString()).innerHTML=1/0;  
+				document.getElementById("vp_sc_mas"+compteur.toString()).innerHTML="";
+				document.getElementById("vr_sc_mas"+compteur.toString()).innerHTML="";  
 			}				
       	}  
 	}
@@ -1003,11 +996,10 @@ function animate(compteur,mobile,mobilefactor) {
 	else{
 		if(mobile.r_part > rs*1.0001) {
 			mobile.temps_observateur+=mobile.E/(1-rs/mobile.r_part)*mobile.dtau; 
-			document.getElementById("to"+compteur.toString()).innerHTML = mobile.temps_observateur.toExponential(3);
 		}else{ 
-			mobile.temps_observateur= 1/0;  //   infini;
-			document.getElementById("to"+compteur.toString()).innerHTML = mobile.temps_observateur.toExponential(3);
+			mobile.temps_observateur += mobile.dtau;
 		}
+		document.getElementById("to"+compteur.toString()).innerHTML = mobile.temps_observateur.toExponential(3);
 		
 	}
   	}  //fin r0!=0

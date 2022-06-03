@@ -83,6 +83,7 @@ function initialisation(){
 	rh = G * M / Math.pow(c, 2) * (1 + Math.sqrt(1 - Math.pow(J * c / (G * M * M), 2))); //rayon de Kerr
 	rhp = 0.5 * ( (2 * G * M / Math.pow(c, 2)) + Math.sqrt(Math.pow( (2 * G * M / Math.pow(c, 2)), 2) - 4 * Math.pow( (J / (c * M)) , 2)));     //RH+
     rhm = 0.5 * ( (2 * G * M / Math.pow(c, 2)) - Math.sqrt(Math.pow( (2 * G * M / Math.pow(c, 2)), 2) - 4 * Math.pow( (J / (c * M)) , 2)));     //RH-
+	gravSurface = 0.5 * Math.pow(c, 2) * (Math.pow(rhp, 2) - Math.pow(a, 2)) / (Math.pow(rhp, 2) + Math.pow(a, 2)); 			//gravité de surface Kerr
 
 	textegravetetc_Kerr();						   
 	document.getElementById("a").innerHTML = a.toExponential(3);
@@ -94,8 +95,10 @@ function initialisation(){
 	else {  document.getElementById("rhp").innerHTML = rhp.toExponential(3);}
 
 	if (isNaN(rhm)){document.getElementById("rhm").innerHTML = 0;}
-	else { document.getElementById("rhm").innerHTML = rhm.toExponential(3);;}
+	else { document.getElementById("rhm").innerHTML = rhm.toExponential(3);}
 
+	document.getElementById("gravS").innerHTML = gravSurface.toExponential(3);
+	
 
     /* Calcul de rmax */
  	if( (E>0.99999 && E<1.00001) && (Math.pow(L,4)- Math.pow(2*rs*(L-a),2)) > 0 ){ 
@@ -412,6 +415,7 @@ function trajectoire() {
 	document.getElementById('start').addEventListener('click', function() {
 		rafraichir(); }, false);
 	document.getElementById("start").innerHTML = texte.pages_trajectoire.bouton_stop;
+	document.getElementById("start").title = texte.pages_trajectoire.bouton_stop_bulleInfo;
 }  // fin fonction trajectoire
 
 // tracé du trajet de la particule

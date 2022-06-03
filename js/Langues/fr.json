@@ -196,7 +196,7 @@
 		"horizon2" : "Horizon intérieur",
 		"moment" : "Moment angulaire",
 		"spin" : "paramètre de spin",										 
-		"gravtitle":"grav en g",
+		"gravtitle":"Gravité de surface en g",
 		"decalageSpec_EnergyReserve":"Si Observateur distant, le décalage spectral est affiché. Si Spationaute, la réserve d'énergie est affichée.",
 		"r3":"il est (par défaut) dans une direction perpendiculaire au plan de l’orbite (et de l’écran) et a une distance d à la fois >> rS , cte et << H0/c²",
 		"ctreastre":"Distance initiale du projectile au centre de l'astre",
@@ -247,6 +247,7 @@
 		"impossible_canvas":"Impossible de récupérer le canvas.",
 		"impossible_context":"Impossible de récupérer le context.",
 		"bouton_stop":"Stop",
+		"bouton_stop_bulleInfo":"Arrêt définitif de la simulation en cours",
 		"boutton_recup":"Valeurs précédentes",
 		"ouvreengrand":"Trajectoire en grande fenêtre",
 		"rayon_neg":"Distance négative impossible !",
@@ -265,14 +266,16 @@
 		"observateur":"Observateur distant",
 		"mobile":"Spationaute",
 		"temps_obs":"Temps observateur distant",
-		"decal_spect":"Décalage spectral/réserve d'énergie", 
+		"decal_spect":"Décalage spectral / Réserve d'énergie", 
 		"r0egale0": "r0 est  positif",
 		"commandes_horsSchwarMassif":"Liste des commandes au clavier : \n\n- Trajectoire Complète : touche a \n- Trajectoire Simple : touche z\n- Stopper la simulation : touche q \n- Reset : touche s \n- Enregistrer : touche d \n- Recupérer les valeurs précédentes : touche f \n- Ralentir la simulation : touche w \n- Pause / Lecture : touche x \n- Accélérer la simulation : touche c",
 		"theta_label":"Angle de départ de la vitesse",
 		"philabel":"Angle de départ",
 		"TempTN":"Température du trou noir",
 		"tempsEvapTN":"temps d'évaporation de Hawking",
-		"infinity":"Infini"
+		"Vlibtitle":"Vitesse de libération à la surface de l'astre",
+		"infinity":"Infini",
+		"gravSurface_BulleInfo":"Gravité de surface théorique pour R=Rh+"
 	},
 
 	"page_trajectoire_massive":{

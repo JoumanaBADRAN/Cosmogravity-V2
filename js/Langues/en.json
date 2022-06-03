@@ -193,7 +193,7 @@
 	"horizon2" : "Inner horizon",
 	"moment" : "Angular momentum",
 	"spin" : "spin parameter",
-	"gravtitle":"grav in g",
+	"gravtitle":"Surface gravity in g",
 	"decalageSpec_EnergyReserve":"If on Distant observer, Spectral Shift is shown. If on Space Walker, Energy Reserve is shown.",
 	"r3":"it is (by default) in a direction perpendicular to the plane of the orbit (and of the screen) and has a distance d at the same time >> rS , cte and << H0/c²",
 	"ctreastre":"Initial distance of the projectile from the centre of the celestial body",
@@ -239,6 +239,7 @@
 	"impossible_canvas":"We can't get the canvas.",
 	"impossible_context":"We can't get the context.",
 	"bouton_stop":"Stop",
+	"bouton_stop_bulleInfo":"Permanent stop of the current simulation",
 	"boutton_recup":"Last values",
 	"ouvreengrand":"Trajectory in a bigger window",
 	"rayon_neg":"Negative radius impossible !",
@@ -256,7 +257,7 @@
 	"observateur":"Distant observer",
 	"mobile":"Space Walker",
 	"temps_obs":"Distant observer time",
-	"decal_spect": "spectral shift/energy reserve",
+	"decal_spect": "Spectral shift / Energy reserve",
 	"v_total" :"Speed(m/s)",
 	"r0egale0": "r0 is positif",
 	"commandes_horsSchwarMassif":"Keyboard : \n\n- Complete trajectory : key a \n- Simple trajectory : key z\n- Stop the calculate : key q \n- Reset : key s \n- Save : key d \n- Last values : key f \n- Slow down : key w \n- Pause / Read : key x \n- Speed up : key c",
@@ -264,7 +265,9 @@
 	"philabel":"Start angle",
 	"TempTN":"Black hole's temperature",
 	"tempsEvapTN":"Hawking's Black hole's time to evaporation",
-	"infinity":"Infinity"
+	"Vlibtitle":"Escape velocity on the surface of the celestial body",
+	"infinity":"Infinity",
+	"gravSurface_BulleInfo":"Theoretical surface gravity when R=Rh+"
 },
 
 "page_trajectoire_massive":{
