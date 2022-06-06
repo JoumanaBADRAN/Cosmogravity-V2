@@ -115,8 +115,8 @@ export class Simulation_universe extends Simulation {
         return this._hubble_cst;
     }
     set hubble_cst(hubble_cst) {
+        this._H0parsec = (hubble_cst * 1e3) / (((AU * (180 * 3600)) / Math.PI) * 1e6);
         this._hubble_cst = hubble_cst;
-        this._H0parsec=(hubble_cst * 1e3) / (((AU * (180 * 3600)) / Math.PI) * 1e6);
         this.check_sum_omegas();
     }
     //H0parsec
@@ -185,13 +185,12 @@ export class Simulation_universe extends Simulation {
         let w0 = this.dark_energy.w_0;
         let w1 = this.dark_energy.w_1;
         let T = 0;
-        let omega_r = 0;
         let omega_m = 0;
         let omega_lambda = 0;
-        this.is_single_cosmo=false;
-        this.is_single_curvature=false;
-        this.is_single_matter=false;
-        this.is_single_radiation=false;
+        this.is_single_cosmo = false;
+        this.is_single_curvature = false;
+        this.is_single_matter = false;
+        this.is_single_radiation = false;
         if (model == "matter") {
             omega_m = 1;
             this.is_single_matter = true;
@@ -202,7 +201,6 @@ export class Simulation_universe extends Simulation {
         }
         if (model == "radiation") {
             this.is_single_radiation = true;
-            omega_r = 1;
             let c = this.constants.c;
             let h = this.constants.h;
             let pi = Math.PI;
@@ -462,7 +460,7 @@ export class Simulation_universe extends Simulation {
     }
     /**
      * Check if the sum of the density parameters is equal to 1. Otherwise modify one parameter to correct the sum.
-     * @param modify_matter true : modify the matter parameter, false : dark energy parameter instead
+     * @param modify_matter true : modify the  dark energy parameter, false : matter parameter instead
      * @returns false if one parm has been modified, true otherwise
      */
     check_sum_omegas(modify_matter = true) {
@@ -471,7 +469,7 @@ export class Simulation_universe extends Simulation {
         let sum = this.matter_parameter + omega_r + this.dark_energy.parameter_value + this.calcul_omega_k();
         if (this.is_flat && sum !== 1) {
             is_param_modified = true;
-            if (modify_matter) {
+            if (!modify_matter) {
                 this.matter_parameter = 1 - this.dark_energy.parameter_value - omega_r;
             }
             else {
@@ -626,7 +624,7 @@ export class Simulation_universe extends Simulation {
         }
         let result = this.runge_kutta_universe_2(step, 0, 1, 1, this.equa_diff_a, interval_a);
         for (let index = 0; index < result.x.length; index++) {
-            result.x[index] = (result.x[index] / this.H0parsec + age) / (3600 * 24 * 365.2425);
+            result.x[index] = (result.x[index] / this._H0parsec + age) / (3600 * 24 * 365.2425);
         }
         return result;
     }
@@ -890,12 +888,11 @@ export class Simulation_universe extends Simulation {
     }
     /**
      * Compute the apparent diameter (Or the angle between 2 object of same shift z)
-     * @param D_e Euclydien linear diameter
      * @param z Cosmologic shift
      * @param distance_metric optionnal parameters for optimisation (permit you to pass an already calculated distances for optimisation)
      * @returns The apparent diameter
      */
-    apparent_diameter(D_e, z, distance_metric) {
+    apparent_diameter(z, distance_metric) {
         let distance;
         if (distance_metric === undefined) {
             distance = Number(this.metric_distance(z));
@@ -903,7 +900,8 @@ export class Simulation_universe extends Simulation {
         else {
             distance = distance_metric;
         }
-        let values_unit2 = { meter: (D_e * (1 + z)) / distance, pc: this.meter_to_parsec((D_e * (1 + z)) / distance), ly: this.meter_to_light_year((D_e * (1 + z)) / distance) };
+        let diameter = distance / (1 + z);
+        let values_unit2 = { meter: diameter, pc: this.meter_to_parsec(diameter), ly: this.meter_to_light_year(diameter) };
         return values_unit2;
     }
     /**
@@ -1248,12 +1246,3 @@ export class Simulation_universe extends Simulation {
             this.simpson(this, this.integral_distance, 0, Number(x), 100000);
     }
 }
-
-let s = new Simulation_universe();
-console.log(s.hubble_cst)
-s.hubble_cst=100;
-console.log(s.hubble_cst)
-
-
-console.log("omega_r : ",s.calcul_omega_r());
-console.log("omega_k : ",s.calcul_omega_k());

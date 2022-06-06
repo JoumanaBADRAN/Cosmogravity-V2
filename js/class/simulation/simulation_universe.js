@@ -115,13 +115,13 @@ export class Simulation_universe extends Simulation {
         return this._hubble_cst;
     }
     set hubble_cst(hubble_cst) {
+        this._H0parsec = (hubble_cst * 1e3) / (((AU * (180 * 3600)) / Math.PI) * 1e6);
         this._hubble_cst = hubble_cst;
-        this._H0parsec=(hubble_cst * 1e3) / (((AU * (180 * 3600)) / Math.PI) * 1e6);
         this.check_sum_omegas();
     }
     //H0parsec
     get H0parsec() {
-        return this._H0parsec;
+        return this.H0parsec;
     }
     set H0parsec(H0) {
         this._H0parsec = H0;
@@ -187,10 +187,10 @@ export class Simulation_universe extends Simulation {
         let T = 0;
         let omega_m = 0;
         let omega_lambda = 0;
-        this.is_single_cosmo=false;
-        this.is_single_curvature=false;
-        this.is_single_matter=false;
-        this.is_single_radiation=false;
+        this.is_single_cosmo = false;
+        this.is_single_curvature = false;
+        this.is_single_matter = false;
+        this.is_single_radiation = false;
         if (model == "matter") {
             omega_m = 1;
             this.is_single_matter = true;
@@ -201,7 +201,6 @@ export class Simulation_universe extends Simulation {
         }
         if (model == "radiation") {
             this.is_single_radiation = true;
-            omega_r = 1;
             let c = this.constants.c;
             let h = this.constants.h;
             let pi = Math.PI;
@@ -461,7 +460,7 @@ export class Simulation_universe extends Simulation {
     }
     /**
      * Check if the sum of the density parameters is equal to 1. Otherwise modify one parameter to correct the sum.
-     * @param modify_matter true : modify the matter parameter, false : dark energy parameter instead
+     * @param modify_matter true : modify the  dark energy parameter, false : matter parameter instead
      * @returns false if one parm has been modified, true otherwise
      */
     check_sum_omegas(modify_matter = true) {
@@ -889,12 +888,11 @@ export class Simulation_universe extends Simulation {
     }
     /**
      * Compute the apparent diameter (Or the angle between 2 object of same shift z)
-     * @param D_e Euclydien linear diameter
      * @param z Cosmologic shift
      * @param distance_metric optionnal parameters for optimisation (permit you to pass an already calculated distances for optimisation)
      * @returns The apparent diameter
      */
-    apparent_diameter(D_e, z, distance_metric) {
+    apparent_diameter(z, distance_metric) {
         let distance;
         if (distance_metric === undefined) {
             distance = Number(this.metric_distance(z));
@@ -902,7 +900,8 @@ export class Simulation_universe extends Simulation {
         else {
             distance = distance_metric;
         }
-        let values_unit2 = { meter: (D_e * (1 + z)) / distance, pc: this.meter_to_parsec((D_e * (1 + z)) / distance), ly: this.meter_to_light_year((D_e * (1 + z)) / distance) };
+        let diameter = distance / (1 + z);
+        let values_unit2 = { meter: diameter, pc: this.meter_to_parsec(diameter), ly: this.meter_to_light_year(diameter) };
         return values_unit2;
     }
     /**
@@ -1023,12 +1022,14 @@ export class Simulation_universe extends Simulation {
                 let z_sol_1 = this.dichotomie(0, z_Pi_div_2, this.metric_distance_simpson, dm, ex);
                 if (dm > dm_zb) {
                     this.dichotomie(z_Pi_div_2, zb, this.metric_distance_simpson, dm, ex);
+                    let z_Pi = Number(this.dichotomie(0, 5e10, this.Integral_dm, Math.PI, ex));
+                    let z_sol_2 = this.dichotomie(z_Pi_div_2, z_Pi, this.metric_distance_simpson, dm, ex);
                     return (z_sol_1 + ", " + z_sol_2);
                 }
                 return z_sol_1;
             }
             else {
-                let z_Pi_div_2 = Number(dichotomie(0, zb, this.Integral_dm, Math.PI / 2, ex));
+                let z_Pi_div_2 = Number(this.dichotomie(0, zb, this.Integral_dm, Math.PI / 2, ex));
                 let z_Pi = Number(this.dichotomie(0, 5e10, this.Integral_dm, Math.PI, ex));
                 let z_sol_1 = this.dichotomie(0, z_Pi_div_2, this.metric_distance_simpson, dm, ex);
                 let z_sol_2 = this.dichotomie(z_Pi_div_2, z_Pi, this.metric_distance_simpson, dm, ex);
@@ -1245,32 +1246,3 @@ export class Simulation_universe extends Simulation {
             this.simpson(this, this.integral_distance, 0, Number(x), 100000);
     }
 }
-
-let s = new Simulation_universe();
-
-
-let t0=25;
-let h0=50;
-let omega_m=0.8;
-let omega_lambda=0.1;
-s.hubble_cst=h0;
-s.temperature=t0;
-s.matter_parameter=omega_m;
-s.dark_energy.parameter_value=omega_lambda;
-
-
-
-console.log(s.calcul_omega_k()+s.calcul_omega_r()+s.matter_parameter
-+s.dark_energy.parameter_value);
-s.single_fluid("radiation");
-
-console.log("omega_k : ",s.calcul_omega_k());
-console.log("omega_r : ",s.calcul_omega_r());
-console.log("omega_m : ",s.matter_parameter);
-console.log("omega_lamda : ",s.dark_energy.parameter_value);
-console.log("age univ : ",s.universe_age());
-
-
-console.log("H0 : ",s.H0parsec);
-
-console.log("c : ",s.constants.G);

@@ -248,7 +248,6 @@ private is_single_curvature:boolean;
 			}
 			if (model == "radiation"){
 				this.is_single_radiation=true;
-				omega_r=1;
 				let c=this.constants.c;
 				let h=this.constants.h;
 				let pi=Math.PI;
@@ -1096,23 +1095,22 @@ public D(theta,z,dm):Object{
 
 	/**
 	 * Compute the apparent diameter (Or the angle between 2 object of same shift z)
-	 * @param D_e Euclydien linear diameter
 	 * @param z Cosmologic shift
 	 * @param distance_metric optionnal parameters for optimisation (permit you to pass an already calculated distances for optimisation)
 	 * @returns The apparent diameter
 	 */
-	public apparent_diameter(D_e: number, z: number, distance_metric?: number) {
-		let distance: number;
-		if (distance_metric === undefined) {
-			distance = Number(this.metric_distance(z));
-		} else {
-			distance = distance_metric;
-		}
-
-		let values_unit2={meter:(D_e * (1 + z)) / distance,pc:this.meter_to_parsec((D_e * (1 + z)) / distance),ly:this.meter_to_light_year((D_e * (1 + z)) / distance)};
-
-		return values_unit2;
-	}
+	public apparent_diameter(z : number, distance_metric?: number) {
+        let distance;
+        if (distance_metric === undefined) {
+            distance = Number(this.metric_distance(z));
+        }
+        else {
+            distance = distance_metric;
+        }
+        let diameter=distance/(1+z);
+        let values_unit2 = { meter:diameter, pc: this.meter_to_parsec(diameter), ly: this.meter_to_light_year(diameter) };
+        return values_unit2;
+    }
 
 	/**
 	 * formula 1/(1 + x) * sqrt(1 / F)
