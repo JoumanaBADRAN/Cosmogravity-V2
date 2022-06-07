@@ -1192,7 +1192,7 @@ function animate(compteur,mobile,mobilefactor) {
 			document.getElementById("r_par"+compteur.toString()).innerHTML = mobile.r_part_obs.toExponential(3);
 			document.getElementById("vr_sc_mas"+compteur.toString()).innerHTML = vr_1_obs.toExponential(3);
 		    document.getElementById("vp_sc_mas"+compteur.toString()).innerHTML = vp_1_obs.toExponential(3);
-			document.getElementById("v_tot"+compteur.toString()).innerHTML = vtotal.toExponential(3);	
+			document.getElementById("v_tot"+compteur.toString()).innerHTML = vtotal.toExponential(7);	
 			if(mobile.r_part_obs<=rs){
 				document.getElementById("vr_sc_mas"+compteur.toString()).innerHTML = "";
 				document.getElementById("vp_sc_mas"+compteur.toString()).innerHTML = "";
@@ -1201,13 +1201,13 @@ function animate(compteur,mobile,mobilefactor) {
 	}   // spationaute
 	else{
 		if (mobile.r_part>0){	
-			mobile.temps_particule+=mobile.dtau;
+			mobile.temps_particule+=mobile.dtau*(1-rs/mobile.r_part_obs)/mobile.E;
 			document.getElementById("tp"+compteur.toString()).innerHTML = mobile.temps_particule.toExponential(3); 
 			document.getElementById("r_par"+compteur.toString()).innerHTML = mobile.r_part.toExponential(3);
 			document.getElementById("vp_sc_mas"+compteur.toString()).innerHTML = vp_1.toExponential(3);
 			document.getElementById("vr_sc_mas"+compteur.toString()).innerHTML = vr_1.toExponential(3);
 			document.getElementById("ga"+compteur.toString()).innerHTML = fm.toExponential(3);
-		    document.getElementById("v_tot"+compteur.toString()).innerHTML = vtotal.toExponential(3); 
+		    document.getElementById("v_tot"+compteur.toString()).innerHTML = vtotal.toExponential(7); 
 			if(mobile.r_part<=rs){
 				document.getElementById("v_tot"+compteur.toString()).innerHTML ="";
 				document.getElementById("vr_sc_mas"+compteur.toString()).innerHTML = "";
