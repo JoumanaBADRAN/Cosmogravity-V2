@@ -936,11 +936,9 @@ function animate(compteur,mobile,mobilefactor) {
 		if (element2.value != "mobile"){  //observateur
 
 			//dt = mobile.temps_chute_libre; 			// initialisation dt temps de l'obs lointain
-			//dtau = dt/( mobile.E / (1-(rs/mobile.r_part_obs)) ); 		// calcul de dtau de chaque mobile
+			// dt = mobile.dtau * ( mobile.E / (1-(rs/mobile.r_part_obs)) );		// initialisation dt temps de l'obs lointain
 
-			dt = mobile.dtau * ( mobile.E / (1-(rs/mobile.r_part_obs)) );		// initialisation dt temps de l'obs lointain
-
-			val_obs = rungekutta_obs(mobile.E,mobile.L,dt, mobile.r_part_obs, mobile.A_part_obs);
+			val_obs = rungekutta_obs(mobile.E,mobile.L,mobile.dtau, mobile.r_part_obs, mobile.A_part_obs);
 			mobile.r_part_obs = val_obs[0]; 		// r
 			if(mobile.r_part_obs<rs*1.0001) { mobile.r_part_obs=rs;}
 			mobile.A_part_obs = val_obs[1]; 		// dr/dt
