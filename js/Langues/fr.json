@@ -198,7 +198,7 @@
 		"spin" : "paramètre de spin",										 
 		"gravtitle":"Gravité de surface en g",
 		"decalageSpec_EnergyReserve":"Si Observateur distant, le décalage spectral est affiché. Si Spationaute, la réserve d'énergie est affichée.",
-		"r3":"il est (par défaut) dans une direction perpendiculaire au plan de l’orbite (et de l’écran) et a une distance d à la fois >> rS , cte et << H0/c²",
+		"r3":"il est (par défaut) dans une direction perpendiculaire au plan de l’orbite (et de l’écran) et a une distance d constante à la fois >> rS et << H0/c²",
 		"ctreastre":"Distance initiale du projectile au centre de l'astre",
 		"rayonschwars":"Rayon de Schwarzschild",
 		"diffderive":"Différence des dérivées seconde de r",

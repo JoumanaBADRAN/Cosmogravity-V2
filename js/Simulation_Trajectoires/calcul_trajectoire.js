@@ -1184,7 +1184,7 @@ function animate(compteur,mobile,mobilefactor) {
 
 	if (element2.value != "mobile"){ // observateur
 		if(mobile.r_part_obs >= rs){
-			mobile.temps_particule += mobile.dtau*(1-rs/mobile.r_part_obs)/mobile.E;
+			mobile.temps_particule += mobile.dtau/(mobile.E/(1-rs/mobile.r_part_obs)); 			//calcul des tps propres mobiles, sachant qu'ici mobile.dtau = dt (voir théorie) 
 			document.getElementById("tp"+compteur.toString()).innerHTML = mobile.temps_particule.toExponential(3);
 			document.getElementById("ga"+compteur.toString()).innerHTML = fm.toExponential(3);
 			document.getElementById("r_par"+compteur.toString()).innerHTML = mobile.r_part_obs.toExponential(3);
@@ -1199,7 +1199,7 @@ function animate(compteur,mobile,mobilefactor) {
 	}   // spationaute
 	else{
 		if (mobile.r_part>0){	
-			mobile.temps_particule+=mobile.dtau*(1-rs/mobile.r_part_obs)/mobile.E;
+			mobile.temps_particule+=mobile.dtau;
 			document.getElementById("tp"+compteur.toString()).innerHTML = mobile.temps_particule.toExponential(3); 
 			document.getElementById("r_par"+compteur.toString()).innerHTML = mobile.r_part.toExponential(3);
 			document.getElementById("vp_sc_mas"+compteur.toString()).innerHTML = vp_1.toExponential(3);
@@ -1223,7 +1223,7 @@ function animate(compteur,mobile,mobilefactor) {
 	}
 
 	if (element2.value != "mobile"){ 	// observateur
-		mobile.temps_observateur += mobile.dtau;
+		mobile.temps_observateur += mobile.dtau; 					//ici, dt
 		document.getElementById("to"+compteur.toString()).innerHTML = mobile.temps_observateur.toExponential(1);
 	}
 	else{ 								// spationaute
@@ -1233,7 +1233,7 @@ function animate(compteur,mobile,mobilefactor) {
 		else{ 
 			mobile.temps_observateur= 1/0;    // infini																		
 		} */
-		mobile.temps_observateur += mobile.dtau;
+		mobile.temps_observateur += mobile.dtau*(1-rs/mobile.r_part_obs)/mobile.E;
 		document.getElementById("to"+compteur.toString()).innerHTML = mobile.temps_observateur.toExponential(1);
 	}
 	

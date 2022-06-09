@@ -195,7 +195,7 @@
 	"spin" : "spin parameter",
 	"gravtitle":"Surface gravity in g",
 	"decalageSpec_EnergyReserve":"If on Distant observer, Spectral Shift is shown. If on Space Walker, Energy Reserve is shown.",
-	"r3":"it is (by default) in a direction perpendicular to the plane of the orbit (and of the screen) and has a distance d at the same time >> rS , cte and << H0/c²",
+	"r3":"it is (by default) in a direction perpendicular to the plane of the orbit (and of the screen) and has a constant distance d at the same time >> rS and << H0/c²",
 	"ctreastre":"Initial distance of the projectile from the centre of the celestial body",
 	"rayonschwars":"Schwarzschild's radius",
 	"diffderive":"Difference of r's second derivatives",

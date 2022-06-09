@@ -1350,7 +1350,7 @@ function calcul_rmax(L,E,vr,r0,rmax1ou2){
 	else if ( (L <= 4*m) && (L > 2*Math.sqrt(3)*m) ) {
       // dans ce cas, r varie entre 2 valeurs r0 et r3 
       //qu'est ce que Vr fonction n'est meme pas defini
-		if ( (Vr(r0) <= Vr(r1)) && (r0 > r1) ) {
+		if ( (Vr_mob(r0,E,L) <= Vr_mob(r1,E,L)) && (r0 > r1) ) {
 			if (r3 > r0) {
 				rmax = r3;
 			}
