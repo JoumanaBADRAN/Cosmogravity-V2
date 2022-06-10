@@ -1199,7 +1199,7 @@ function animate(compteur,mobile,mobilefactor) {
 	}   // spationaute
 	else{
 		if (mobile.r_part>0){	
-			mobile.temps_particule+=mobile.dtau;
+			mobile.temps_particule+=mobile.dtau*(1-rs/mobile.r_part_obs)/mobile.E;
 			document.getElementById("tp"+compteur.toString()).innerHTML = mobile.temps_particule.toExponential(3); 
 			document.getElementById("r_par"+compteur.toString()).innerHTML = mobile.r_part.toExponential(3);
 			document.getElementById("vp_sc_mas"+compteur.toString()).innerHTML = vp_1.toExponential(3);
@@ -1233,7 +1233,7 @@ function animate(compteur,mobile,mobilefactor) {
 		else{ 
 			mobile.temps_observateur= 1/0;    // infini																		
 		} */
-		mobile.temps_observateur += mobile.dtau*(1-rs/mobile.r_part_obs)/mobile.E;
+		mobile.temps_observateur += mobile.dtau;
 		document.getElementById("to"+compteur.toString()).innerHTML = mobile.temps_observateur.toExponential(1);
 	}
 	
@@ -1321,6 +1321,7 @@ function rungekutta_obs(E,L,h, r, A) {
 }
 
 function calcul_rmax(L,E,vr,r0,rmax1ou2){
+	
 	r1 = (L * (L - Math.sqrt(Math.pow(L, 2) - 12 * Math.pow(m, 2))) / (2 * m));
 	r2 = (L * (L + Math.sqrt(Math.pow(L, 2) - 16 * Math.pow(m, 2))) / (4 * m));
 	ra = 2 * m * Math.pow(L, 2);
