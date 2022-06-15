@@ -275,7 +275,7 @@ function trajectoire() {
 		
 		if(joy.GetY()<0){
 			while (deltam_sur_m < 0.5) { 					// tant que la réserve d'énergie est inférieur à 50%, on peut piloter
-				Delta_L=-joy.GetY()/(100*r0/rs)*L; 
+				Delta_L=joy.GetY()*Math.log10(10+rs/r_part)*Math.log10(10+Math.abs(L))*Math.log(10+vtot/c)*1e-2;
 				L=L+Delta_L ;
 				Delta_E=(1-rs/r_part)*L*Delta_L/E/Math.pow(r_part,2);
 				E=E+Delta_E; 
@@ -288,7 +288,7 @@ function trajectoire() {
 
 		else if(joy.GetY()>0){
 			while (deltam_sur_m < 0.5) { 					// tant que la réserve d'énergie est inférieur à 50%, on peut piloter
-				Delta_L=-joy.GetY()/(100*r0/rs)*L;
+				Delta_L=joy.GetY()*Math.log10(10+rs/r_part)*Math.log10(10+Math.abs(L))*Math.log(10+vtot/c)*1e-2;
 				L=L+Delta_L ;
 				Delta_E=(1-rs/r_part)*L*Delta_L/E/Math.pow(r_part,2) ;
 				E=E+Delta_E; 
