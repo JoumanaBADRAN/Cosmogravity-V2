@@ -60,8 +60,11 @@ function calc_energie_noire() {
   omegam0 = Number(document.getElementById("omegam0_annexes").value);
   omegaDE0 = Number(document.getElementById("omegaDE0_annexes").value);
   omegak0 = Number(document.getElementById("resultat_omegak0_annexes").innerHTML);
+  Ie = Number(document.getElementById("i_e").value);
+  
   document.getElementById("tempsEmission_alert").innerHTML = "";
   document.getElementById("tempsReception_alert").innerHTML = "";
+  
 
   //création d'une liste qui va prendre les résultats des calculs avant qu'elles soient arrondis
   arr = [];
@@ -223,7 +226,7 @@ function calc_energie_noire() {
 
     agebetween_sec=agebetween*H0enannee/H0parsec;
 
-
+// z1
   Tz1 = t0 * (1 + Number(z1));
   Tz1 = Tz1.toExponential(4);
   Omz1 = omegam0 * Math.pow(1 + Number(z1), 3) / Enoire_norm(Number(z1), omegam0, Number(omegaDE0), Or);
@@ -237,27 +240,81 @@ function calc_energie_noire() {
   Hz1 = h0 * Math.pow(Enoire_norm(Number(z1), omegam0, Number(omegaDE0), Or), 0.5);
   Hz1 = Hz1.toExponential(4);
 
+//z2
+  Tz2 = t0 * (1 + Number(z2));
+  Tz2 = Tz2.toExponential(4);
+  Omz2 = omegam0 * Math.pow(1 + Number(z2), 3) / Enoire_norm(Number(z2), omegam0, Number(omegaDE0), Or);
+  Omz2 = Omz2.toExponential(4);
+  Olz2 = Number(omegaDE0) / Enoire_norm(Number(z2), omegam0, Number(omegaDE0), Or);
+  Olz2 = Olz2.toExponential(4);
+  Orz2 = Or * Math.pow(1 + Number(z2), 4) / Enoire_norm(Number(z2), omegam0, Number(omegaDE0), Or);
+  Orz2 = Orz2.toExponential(4);
+  Okz2 = omegak0 * Math.pow(1 + Number(z2), 2) / Enoire_norm(Number(z2), omegam0, Number(omegaDE0), Or);
+  Okz2 = Okz2.toExponential(4);
+  Hz2 = h0 * Math.pow(Enoire_norm(Number(z2), omegam0, Number(omegaDE0), Or), 0.5);
+  Hz2 = Hz2.toExponential(4);
+
+   //calcul de la distance du diametre apparent et distance lumiere(dm et photometrie)
+  dda = dm1 / (1 + Number(z1));
+  dl = dm1 * (1 + (z1));
+
+  dda_2 = dm2 / (1+ Number(z2));
+  dl_2 = dm2 * (1+ Number(z2));
+
+  
+  
+  Le = 4 * pi() * Ie;
+
+ 
+  Ee = Le / (4 * pi() * Math.pow(dl,2));
+  
+  Ee_2 = Le / (4* pi() * Math.pow(dl_2,2));
+
+  Eps = Number(0.001);
 
 
 
 
+  
+		
+		document.getElementById("show_dl").style.display = "contents";
+		document.getElementById("show_da").style.display = "contents";
+		document.getElementById("show_dl_2").style.display = "contents";
+		document.getElementById("show_da_2").style.display = "contents";
+		document.getElementById("show_E_e").style.display = "contents";
+		document.getElementById("show_E_e_2").style.display = "contents";
+		document.getElementById("show_L_e").style.display = "contents";
 
   //les distances sont positives
   dm = Math.abs(dm);
-  dm1 = Math.abs(dm1);
-  dm2 = Math.abs(dm2);
+	dm1 = Math.abs(dm1);
+	dm2 = Math.abs(dm2);
+	dda = Math.abs(dda);
+	dl = Math.abs(dl);
+	dda_2 = Math.abs(dda_2);
+	dl_2 = Math.abs(dl_2);
 
+
+  //En parsec 
   dm_pc = dm * 3.2407557442396 * Math.pow(10, -17);
-  dm1_pc = dm1 * 3.2407557442396 * Math.pow(10, -17);
-  dm2_pc = dm2 * 3.2407557442396 * Math.pow(10, -17);
+	dm1_pc = dm1 * 3.2407557442396 * Math.pow(10, -17);
+	dm2_pc = dm2 * 3.2407557442396 * Math.pow(10, -17);
+	da_pc = dda * 3.2407557442396 * Math.pow(10, -17);
+	dl_pc = dl * 3.2407557442396 * Math.pow(10, -17);
+	da2_pc = dda_2 * 3.2407557442396 * Math.pow(10, -17);
+	dl2_pc = dl_2 * 3.2407557442396 * Math.pow(10, -17);
 
   //annÃ©es lumiÃ¨re
   lumie = 9460730472580800;
   dm1_lum = (dm1 / lumie);
   dm2_lum = (dm2 / lumie);
   dif_lum = (dm / lumie);
+  da_lum = (dda / lumie);
+	dl_lum = (dl / lumie);
+	da2_lum = (dda_2 / lumie);
+	dl2_lum = (dl_2 / lumie);
 
-  arr.push(dm1, dm2, dm, dm1_pc, dm2_pc, dm_pc, dm1_lum, dm2_lum, dif_lum, tempsEmission, tempsReception, agebetween, tempsEmission_sec, tempsReception_sec, agebetween_sec);
+  arr.push(dm1, dm2, dm, dm1_pc, dm2_pc, dm_pc,da_pc, dl_pc, dm1_lum, dm2_lum, dif_lum, da_lum, dl_lum, tempsEmission, tempsReception, agebetween, tempsEmission_sec, tempsReception_sec, agebetween_sec);
 
   //on ajuste le nombre de decimale apres la virgule
   if (dm != 0) {
@@ -326,12 +383,59 @@ function calc_energie_noire() {
   document.getElementById("agebetween_sec").innerHTML = agebetween_sec;
   document.getElementById("tempsReception_sec").innerHTML = tempsReception_sec;
   document.getElementById("tempsEmission_sec").innerHTML = tempsEmission_sec;
+
+  // en z1
   document.getElementById("Tz1").innerHTML = Tz1;
   document.getElementById("Omz1").innerHTML = Omz1;
   document.getElementById("Olz1").innerHTML = Olz1;
   document.getElementById("Orz1").innerHTML = Orz1;
   document.getElementById("Okz1").innerHTML = Okz1;
   document.getElementById("Hz1").innerHTML = Hz1;
+// en z2
+  document.getElementById("Tz2").innerHTML = Tz2;
+  document.getElementById("Omz2").innerHTML = Omz2;
+  document.getElementById("Olz2").innerHTML = Olz2;
+  document.getElementById("Orz2").innerHTML = Orz2;
+  document.getElementById("Okz2").innerHTML = Okz2;
+  document.getElementById("Hz2").innerHTML = Hz2;
+
+  
+  // Photometrie
+
+  document.getElementById("dm").innerHTML = dm;
+	document.getElementById("dm1").innerHTML = dm1;
+	document.getElementById("dm2").innerHTML = dm2;
+	document.getElementById("dl").innerHTML = dl;
+	document.getElementById("dda").innerHTML = dda;
+	document.getElementById("dl_2").innerHTML = dl_2;
+	document.getElementById("dda_2").innerHTML = dda_2;
+  document.getElementById("L_e").innerHTML = Le;
+	document.getElementById("E_e").innerHTML = Ee;
+	document.getElementById("E_e_2").innerHTML = Ee_2;
+
+  // Photometrie en parsec 
+
+	document.getElementById("dm_pc").innerHTML = dm_pc;
+	document.getElementById("dm1_pc").innerHTML = dm1_pc;
+	document.getElementById("dm2_pc").innerHTML = dm2_pc;
+	document.getElementById("dda_pc").innerHTML = da_pc;
+	document.getElementById("dl_pc").innerHTML = dl_pc;
+	document.getElementById("dda2_pc").innerHTML = da2_pc;
+	document.getElementById("dl2_pc").innerHTML = dl2_pc;
+
+  //Photometrie en années lumières
+
+	document.getElementById("dm1_lum").innerHTML = dm1_lum;
+	document.getElementById("dm2_lum").innerHTML = dm2_lum;
+	document.getElementById("dm_diff_lum").innerHTML = dif_lum;
+	document.getElementById("dda2_lum").innerHTML = da2_lum;
+	document.getElementById("dl_lum").innerHTML = dl_lum;
+	document.getElementById("dda_lum").innerHTML = da_lum;
+	document.getElementById("dl2_lum").innerHTML = dl2_lum;
+
+	
+
+
   stop_spin();
 }
 
@@ -406,6 +510,49 @@ function arrondir() {
     document.getElementById("tempsEmission_sec").innerHTML = arr[12];
     document.getElementById("tempsReception_sec").innerHTML = arr[13];
     document.getElementById("agebetween_sec").innerHTML = arr[14];
+
+    // Parametres cosmologiaues en z1
+    document.getElementById("Tz1").innerHTML = arr[15];
+    document.getElementById("Omz1").innerHTML = arr[16];
+    document.getElementById("Olz1").innerHTML = arr[17];
+    document.getElementById("Orz1").innerHTML = arr[18];
+    document.getElementById("Okz1").innerHTML = arr[19];
+    document.getElementById("Hz1").innerHTML = arr[20];
+
+   // Parametres cosmologiaues en z2
+   document.getElementById("Tz2").innerHTML = arr[21];
+   document.getElementById("Omz2").innerHTML = arr[22];
+   document.getElementById("Olz2").innerHTML = arr[23];
+   document.getElementById("Orz2").innerHTML = arr[24];
+   document.getElementById("Okz2").innerHTML = arr[25];
+   document.getElementById("Hz2").innerHTML = arr[26];
+  
+   // Photometrie en metre 
+
+   document.getElementById("dl").innerHTML = arr[27];
+	 document.getElementById("dda").innerHTML = arr[28];
+	 document.getElementById("dl_2").innerHTML = arr[29];
+	 document.getElementById("dda_2").innerHTML = arr[30];
+   document.getElementById("L_e").innerHTML = arr[31];
+	 document.getElementById("E_e").innerHTML = arr[32];
+	 document.getElementById("E_e_2").innerHTML = arr[33];
+
+   //Photometrie en parsec
+ 
+   document.getElementById("dda_pc").innerHTML = arr[34];
+   document.getElementById("dl_pc").innerHTML = arr[35];
+	 document.getElementById("dda2_pc").innerHTML = arr[36];
+	 document.getElementById("dl2_pc").innerHTML = arr[37];
+
+   //Photometrie en années lumières 
+
+   document.getElementById("dda2_lum").innerHTML = arr[38];
+	 document.getElementById("dl_lum").innerHTML = arr[39];
+	 document.getElementById("dda_lum").innerHTML = arr[40];
+	 document.getElementById("dl2_lum").innerHTML = arr[41];
+
+
+
   } else {
     if (document.documentElement.lang.localeCompare("en") == 0) {
       document.getElementById("arr").innerHTML = "Undo Round up";
@@ -431,6 +578,46 @@ function arrondir() {
     document.getElementById("tempsEmission_sec").innerHTML = arr[12].toExponential(4);
     document.getElementById("tempsReception_sec").innerHTML = arr[13].toExponential(4);
     document.getElementById("agebetween_sec").innerHTML = arr[14].toExponential(4);
+
+    // Parametres cosmologiaues en z1
+    document.getElementById("Tz1").innerHTML = arr[15].toExponential(4);
+    document.getElementById("Omz1").innerHTML = arr[16].toExponential(4);
+    document.getElementById("Olz1").innerHTML = arr[17].toExponential(4);
+    document.getElementById("Orz1").innerHTML = arr[18].toExponential(4);
+    document.getElementById("Okz1").innerHTML = arr[19].toExponential(4);
+    document.getElementById("Hz1").innerHTML = arr[20].toExponential(4);
+
+   // Parametres cosmologiaues en z2
+   document.getElementById("Tz2").innerHTML = arr[21].toExponential(4);
+   document.getElementById("Omz2").innerHTML = arr[22].toExponential(4);
+   document.getElementById("Olz2").innerHTML = arr[23].toExponential(4);
+   document.getElementById("Orz2").innerHTML = arr[24].toExponential(4);
+   document.getElementById("Okz2").innerHTML = arr[25].toExponential(4);
+   document.getElementById("Hz2").innerHTML = arr[26].toExponential(4);
+  
+   // Photometrie en metre 
+
+   document.getElementById("dl").innerHTML = arr[27].toExponential(4);
+	 document.getElementById("dda").innerHTML = arr[28].toExponential(4);
+	 document.getElementById("dl_2").innerHTML = arr[29].toExponential(4);
+	 document.getElementById("dda_2").innerHTML = arr[30].toExponential(4);
+   document.getElementById("L_e").innerHTML = arr[31].toExponential(4);
+	 document.getElementById("E_e").innerHTML = arr[32].toExponential(4);
+	 document.getElementById("E_e_2").innerHTML = arr[33].toExponential(4);
+
+   //Photometrie en parsec
+ 
+   document.getElementById("dda_pc").innerHTML = arr[34].toExponential(4);
+   document.getElementById("dl_pc").innerHTML = arr[35].toExponential(4);
+	 document.getElementById("dda2_pc").innerHTML = arr[36].toExponential(4);
+	 document.getElementById("dl2_pc").innerHTML = arr[37].toExponential(4);
+
+   //Photometrie en années lumières 
+
+   document.getElementById("dda2_lum").innerHTML = arr[38].toExponential(4);
+	 document.getElementById("dl_lum").innerHTML = arr[39].toExponential(4);
+	 document.getElementById("dda_lum").innerHTML = arr[40].toExponential(4);
+	 document.getElementById("dl2_lum").innerHTML = arr[41].toExponential(4);
   }
 }
 

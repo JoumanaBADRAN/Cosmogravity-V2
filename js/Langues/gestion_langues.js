@@ -454,8 +454,8 @@ function texteUniversCalculs() {
 		document.getElementById("txt_geometrie").innerHTML = texte.page_univers_calculs.Geometrie;
 		document.getElementById("txt_photometrie").innerHTML = texte.page_univers_calculs.Photometrie;
 		document.getElementById("txt_valeurs_Intensite").innerHTML = texte.page_univers_calculs.Intensite;  // Ajout de text page annexe Intensite																							   
-		document.getElementById("ts-1").value = texte.page_univers_general.bouton_tracer;
-		document.getElementById("ts-2").value = texte.page_univers_general.bouton_tracer;
+		// document.getElementById("ts-1").value = texte.page_univers_general.bouton_tracer;
+		// document.getElementById("ts-2").value = texte.page_univers_general.bouton_tracer;
 		document.getElementById("txt_infoCalculs").innerHTML = texte.page_univers_calculs.infoCalculs;
 		document.getElementById("secondeArc").innerHTML = texte.page_univers_calculs.secondeArc;
 		document.getElementById("calculInverse").innerHTML = texte.page_univers_calculs.calculInverse;

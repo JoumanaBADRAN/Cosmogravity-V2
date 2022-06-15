@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
 
   <!-- Css -->
-  <link rel="stylesheet" href="Css/Index.css">
+  <link rel="stylesheet" href="Css/Index.css"> 
   <link rel="stylesheet" href="Css/calc(old).css">
 
   <title id="calculs_annexes_noire">Calcul annexe avec énergie sombre</title>
@@ -88,8 +88,13 @@
     <input type="hidden" id="typeannee" value="Grégorienne" />
     <input type="hidden" id="EnergieSombre" name="EnergieSombre" value="true" />
 
+    <!-- Parametres de Calcul -->
 
-    <div id="tabs-1">
+    
+
+      <!-- Paramètres généraux -->
+
+     <div id="tabs-1"> 
       <span id="txt_parametres" style="font-weight:bold"></span>
 
       <div>
@@ -155,6 +160,16 @@
           <label for="z2">z<sub>2</sub> =</label>
           <input id="z2" value="0" maxlength="13" type="text">
         </div>
+         <!-- Ie pour calculs de Eclairement -->
+
+         <span id="txt_valeurs_Intensite" style="font-weight:bold"></span>
+
+         <div>
+             <label for="input_intensite">I<sub>e</sub> =</label>
+             <input id="i_e" value="0" maxlength="13" type="text">
+             <span style="font-size:smaller">W.sr<sup>-1</sup</span>
+         </div>
+
 
         <div id="plus">
           <input id="bcalc_ord" type="button" onclick="lance_calc();ga('send', 'event', 'button', 'click', 'Calcul Annexe normal');" value="Calcul"></input>
@@ -163,7 +178,10 @@
         </div>
 
         <br />
+        
+       <!-- Resultats des calculs Geometriques -->
 
+        
         <span id="txt_resultats" style="font-weight:bold;"></span></br>
         <div>
           <label for="dm1">d<sub>m1</sub> =</label>
@@ -200,42 +218,149 @@
           </br>
         </div>
         <span id="txt_valeursZ1" style="font-weight:bold"></span>
-        <div>
-          <label for="Hz1">H(z<sub>1</sub>) =</label>
-          <span id="Hz1" style="color:blue"></span> km.s<sup>-1</sup>.Mpc<sup>-1</sup>
-        </div>
+        <br/>
+                <div id="valeurs_en_Z">
+                    <div id="en_Z1">
+                        <div>
+                            <label for="Tz1">T<span style="font-size:smaller">(z<sub>1</sub>)</span> =</label>
+                            <span id="Tz1" style="color:blue"></span> <span id="Tz1_unit" style="display:none"><span style="font-size:smaller"> K </span></span>
+                        </div>
 
+                        <div>
+                            <label for="Hz1">H<span style="font-size:smaller">(z<sub>1</sub>)</span> =</label>
+                            <span id="Hz1" style="color:blue"></span> <span id="Hz1_unit" style="display:none"> <span style="font-size:smaller">km.s<sup>-1</sup>.Mpc<sup>-1</sup></span></span>
+                        </div>
 
+                        <div>
+                            <label for="Omz1">&Omega;<sub>m</sub><span style="font-size:smaller">(z<sub>1</sub>)</span> =</label>
+                            <span id="Omz1" style="color:blue"></span>
+                        </div>
 
-        <div>
-          <label for="Tz1">T(z<sub>1</sub>) =</label>
-          <span id="Tz1" style="color:blue"></span> K
-        </div>
+                        <div>
+                            <label for="Olz1">&Omega;<sub>&Lambda;</sub><span style="font-size:smaller">(z<sub>1</sub>)</span> =</label>
+                            <span id="Olz1" style="color:blue"></span>
+                        </div>
 
+                        <div>
+                            <label for="Orz1">&Omega;<sub>r</sub><span style="font-size:smaller">(z<sub>1</sub>)</span> =</label>
+                            <span id="Orz1" style="color:blue"></span>
+                        </div>
 
+                        <div>
+                            <label for="Okz1">&Omega;<sub>k</sub><span style="font-size:smaller">(z<sub>1</sub>)</span> =</label>
+                            <span id="Okz1" style="color:blue"></span>
+                        </div>
+                    </div>
 
-        <div>
-          <label for="Omz1">&Omega;<sub>m</sub>(z<sub>1</sub>) =</label>
-          <span id="Omz1" style="color:blue"></span>
-        </div>
+                    </br>
 
+                    <div id="en_Z2">
+                        <div>
+                        <label for="Tz2">T<span style="font-size:smaller">(z<sub>2</sub>)</span> =</label>
+                        <span id="Tz2" style="color:blue"></span> <span id="Tz2_unit" style="display:none"><span style="font-size:smaller"> K </span></span>
+                        </div>
 
-        <div>
-          <label for="Olz1">&Omega;<sub>&Lambda;</sub>(z<sub>1</sub>) =</label>
-          <span id="Olz1" style="color:blue"></span>
-        </div>
+                        <div>
+                        <label for="Hz2">H<span style="font-size:smaller">(z<sub>2</sub>)</span> =</label>
+                        <span id="Hz2" style="color:blue"></span> <span id="Hz2_unit" style="display:none"> <span style="font-size:smaller">km.s<sup>-1</sup>.Mpc<sup>-1</sup></span></span>
+                        </div>
 
+                        <div>
+                        <label for="Omz2">&Omega;<sub>m</sub><span style="font-size:smaller">(z<sub>2</sub>)</span> =</label>
+                        <span id="Omz2" style="color:blue"></span>
+                        </div>
 
-        <div>
-          <label for="Orz1">&Omega;<sub>r</sub>(z<sub>1</sub>) =</label>
-          <span id="Orz1" style="color:blue"></span>
-        </div>
+                        <div>
+                        <label for="Olz2">&Omega;<sub>&Lambda;</sub><span style="font-size:smaller">(z<sub>2</sub>)</span> =</label>
+                        <span id="Olz2" style="color:blue"></span>
+                        </div>
 
+                        <div>
+                        <label for="Orz2">&Omega;<sub>r</sub><span style="font-size:smaller">(z<sub>2</sub>)</span> =</label>
+                        <span id="Orz2" style="color:blue"></span>
+                        </div>
 
-        <div>
-          <label for="Okz1">&Omega;<sub>k</sub>(z<sub>1</sub>) =</label>
-          <span id="Okz1" style="color:blue"></span>
-        </div>
+                        <div>
+                        <label for="Okz2">&Omega;<sub>k</sub><span style="font-size:smaller">(z<sub>2</sub>)</span> =</label>
+                        <span id="Okz2" style="color:blue"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Resultats Photometrie -->
+
+                <div id="photo_box">
+
+                  <span id="txt_photometrie" style="font-weight:bold"></span>
+
+                  <div>
+                      <label for="L_e">L<sub>e</sub> =</label>
+                      <span id="show_L_e" style="display:none">
+                          <span id="L_e" style="color:blue"></span>
+                          <span style="font-size:smaller"> W.m<sup>-2</sup>.sr<sup>-1</sup></span>
+                      </span>
+                  </div>
+
+                  <div id="calcul_dl">
+                      <div>
+                          <label for="dl">d<sub>L<sub>1</sub></sub> =</label>
+                          <span id="show_dl" style="display:none">
+                              <span id="dl" style="color:blue"></span><span style="font-size:smaller"> m = </span>
+                              <span id="dl_pc" style="color:blue"></span><span style="font-size:smaller"> pc = </span>
+                              <span id="dl_lum" style="color:blue"></span><span style="font-size:smaller"> al </span>
+                          </span>
+                      </div>
+
+                      <div>
+                          <label for="dl2">d<sub>L<sub>2</sub></sub> =</label>
+                          <span id="show_dl_2" style="display:none">
+                              <span id="dl_2" style="color:blue"></span><span style="font-size:smaller"> m = </span>
+                              <span id="dl2_pc" style="color:blue"></span><span style="font-size:smaller"> pc = </span>
+                              <span id="dl2_lum" style="color:blue"></span><span style="font-size:smaller"> al </span>
+                          </span>
+                      </div>
+                  </div>
+
+                  <div id="calcul_da">
+                      <div>
+                          <label for="dda">d<sub>a<sub>1</sub></sub> =</label>
+                          <span id="show_da" style="display:none">
+                              <span id="dda" style="color:blue"></span><span style="font-size:smaller"> m = </span>
+                              <span id="dda_pc" style="color:blue"></span><span style="font-size:smaller"> pc = </span>
+                              <span id="dda_lum" style="color:blue"></span><span style="font-size:smaller"> al </span>
+                          </span>
+                      </div>
+
+                      <div >
+                          <label for="dda2">d<sub>a<sub>2</sub></sub> =</label>
+                          <span id="show_da_2" style="display:none">
+                              <span id="dda_2" style="color:blue"></span><span style="font-size:smaller"> m = </span>
+                              <span id="dda2_pc" style="color:blue"></span><span style="font-size:smaller"> pc = </span>
+                              <span id="dda2_lum" style="color:blue"></span><span style="font-size:smaller"> al </span>
+                          </span>
+                      </div>
+                  </div>
+
+                  <div id="calcul_E">
+                      <div>
+                          <label for="E_e">E<sub>e<sub>1</sub></sub> =</label>
+                          <span id="show_E_e" style="display:none">
+                              <span id="E_e" style="color:blue"></span>
+                              <span style="font-size:smaller"> W.m<sup>-2</sup></span>
+                          </span>
+                      </div>
+                      <div>
+                          <label for="E_e2">E<sub>e<sub>2</sub></sub> =</label>
+                          <span id="show_E_e_2" style="display:none">
+                              <span id="E_e_2" style="color:blue"></span>
+                              <span style="font-size:smaller"> W.m<sup>-2</sup></span>
+                          </span>
+                      </div>
+                  </div>
+
+              </div>
+
+              </br>
 
 
         <br/>

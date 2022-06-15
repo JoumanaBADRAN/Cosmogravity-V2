@@ -12,7 +12,7 @@ function nbJoursParAn() {
     switch (typeannee) {
         case 'Sidérale':
             return 365.256363051;
-        case 'Julienne':
+        case 'Julienne':e
             return 365.25;
         case 'Tropique (2000)':
             return 365.242190517;
@@ -103,6 +103,9 @@ function calcul() { // fonction principale de cosmogravity
     H0enannee = calcul_H0enannee(H0parsec, nbrjours);
     H0engannee = calcul_H0engannee(H0parsec, nbrjours);
     Or = calcul_Omegar(h, c, k, t0, H0parsec);
+
+   
+
     
     //zoom();
     
@@ -124,8 +127,15 @@ function calcul() { // fonction principale de cosmogravity
     }
 
     //on calcule omegak
-    omegak0 = Number(document.getElementById("resultat_omegak0").innerHTML);
+      
     
+    omegak0 = Number(document.getElementById("resultat_omegak0").innerHTML);
+
+    // Renvoie vers le cas monofluides dans le cas où 3 omega=0 et omegak0=1
+    if( omegam0==0 && omegalambda0==0 && Or==0 && omegak0==1)  
+    {
+        window.location="https://www.lupm.in2p3.fr/cosmogravity/Simulation_univers_monofluides.html";
+    }
     
     //donne les variables sous forme d'exposant si differente de 0
 
@@ -249,7 +259,7 @@ function calcul() { // fonction principale de cosmogravity
  
     if(modele==1) {
         pas = 5e-4 ;  
-        if(amax1<=1) {
+       if(amax1<=1) {
             amax1=5;
         }
         //  on part de a=1 et on va vers les temps négatifs
@@ -430,15 +440,16 @@ function calcul() { // fonction principale de cosmogravity
                 data_x.push(agefinal*epsilon + m/ H0engannee);
                 data_y.push(adetau2);
                 m=m-pas;
-            }
+            } 
             //ages croissants si H0 > 0
             if(H0 > 0) {
                 fin = data_y.length;
                 data_x.reverse();
                 data_y.reverse();
             }
-        }
+        
     }
+}
     // Fin du modele 2	
 
     // Si big bang sans big crunch  on trace le graphe zoomé (amax<1)  en partant de amax  vers amin

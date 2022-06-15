@@ -196,7 +196,6 @@ function calcu(path) {
 
 	Le = 4 * pi() * Ie;
 	Ee = Le / (4 * pi() * Math.pow(dl,2));
-
 	Ee_2 = Le / (4* pi() * Math.pow(dl_2,2));
 
 	Eps = Number(0.001);
@@ -475,7 +474,14 @@ function calcu(path) {
 
 		
 
-		let annots = [];
+		let annots = [{xref: 'paper',
+		yref: 'paper',
+		x: 1,
+		xanchor: 'right',
+		y: 1,
+		yanchor: 'bottom',
+		text:'Tz1:'+Tz1+' Tz2:'+Tz2+ 'Hz1: '+Hz1+' Hz2: '+Hz2+' \Ω<sub>m</sub>z1: '+Omz1+' \Ω<sub>m</sub>z1: '+Omz2+' \Ω<sub>Λ</sub>z1: '+Olz1+' \Ω<sub>Λ</sub>z2: '+Olz2+' \Ω<sub>r</sub>z1: '+Orz1+' \Ω<sub>Λ</sub>z2: '+Orz2+' \Ω<sub>k</sub>z1: '+Okz1+' \Ω<sub>k</sub>z2: '+Okz2,
+		showarrow: false}];
 		let val_graph = calculDeDs(abscissa_d);
 		let data = [
 			{
@@ -569,7 +575,14 @@ function calcu(path) {
 
 		
 
-		let annots = [];
+		let annots = [{xref: 'paper',
+		yref: 'paper',
+		x: 0.6,
+		xanchor: 'right',
+		y: 1,
+		yanchor: 'bottom',
+		text: '     Tz1: '+Tz1+'     Tz2: '+Tz2,
+		showarrow: false}];
 		let val_graph = calcul_omegas(abscissa_omega);
 		let data = [
 			{
@@ -661,7 +674,14 @@ function calcu(path) {
 		}
 	
 
-		let annots = [];
+		let annots = [{xref: 'paper',
+		yref: 'paper',
+		x: 1,
+		xanchor: 'right',
+		y: 1,
+		yanchor: 'bottom',
+		text: 'Tz1:'+Tz1+' Tz2:'+Tz2+'Hz1: '+Hz1+' Hz2: '+Hz2+' \Ω<sub>m</sub>z1: '+Omz1+' \Ω<sub>m</sub>z1: '+Omz2+' \Ω<sub>Λ</sub>z1: '+Olz1+' \Ω<sub>Λ</sub>z2: '+Olz2+' \Ω<sub>r</sub>z1: '+Orz1+' \Ω<sub>Λ</sub>z2: '+Orz2+' \Ω<sub>k</sub>z1: '+Okz1+' \Ω<sub>k</sub>z2: '+Okz2,
+		showarrow: false}] ;
 		let val_graph = calcul_temps(abscissa_t);
 		let data = [
 			{
@@ -733,7 +753,14 @@ function calcu(path) {
 	
 		var val_abscissa = calcul_temps(abscissa_d);
 		let val_graph = calculDeDs(abscissa_d);
-		let annots = [];
+		let annots =  [{xref: 'paper',
+		yref: 'paper',
+		x: 1,
+		xanchor: 'right',
+		y: 1,
+		yanchor: 'bottom',
+		text: 'Tz1:'+Tz1+' Tz2:'+Tz2+'Hz1: '+Hz1+' Hz2: '+Hz2+' \Ω<sub>m</sub>z1: '+Omz1+' \Ω<sub>m</sub>z1: '+Omz2+' \Ω<sub>Λ</sub>z1: '+Olz1+' \Ω<sub>Λ</sub>z2: '+Olz2+' \Ω<sub>r</sub>z1: '+Orz1+' \Ω<sub>Λ</sub>z2: '+Orz2+' \Ω<sub>k</sub>z1: '+Okz1+' \Ω<sub>k</sub>z2: '+Okz2,
+		showarrow: false}];
 		let data = [
 			{
 				x: val_abscissa[1],
@@ -816,6 +843,7 @@ function calcu(path) {
 			document.getElementById("graph_container_omega_t").style.display = "contents"; //display graph
 			plot_title = "\Ω<sub>m</sub>  Ω<sub>Λ</sub>  Ω<sub>r</sub>  Ω<sub>k</sub>"
 			plot_type = 'scatter'
+			
 
 			var abscissa_omega = linear_scale(zmin, zmax, 500);
 		}
@@ -823,7 +851,14 @@ function calcu(path) {
 
 		var val_abscissa = calcul_temps(abscissa_omega);
 		let val_graph = calcul_omegas(abscissa_omega);
-		let annots = [];
+		let annots = [{xref: 'paper',
+		yref: 'paper',
+		x: 0.6,
+		xanchor: 'right',
+		y: 1,
+		yanchor: 'bottom',
+		text: '     Tz1: '+Tz1+'     Tz2: '+Tz2,
+		showarrow: false}]
 		let data = [
 			{
 				x: val_abscissa[1],
