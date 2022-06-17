@@ -125,12 +125,12 @@ function calcu(path) {
 		rho_r = (4 * sigma * Math.pow(t0, 4)) / (Math.pow(c, 3));
 		Or = (8 * Math.PI * G * rho_r) / (3 * Math.pow(H0parsec, 2));
 		Or = 1.68 * Or;
-		Or = Or.toExponential();
+		Or = Or.toExponential(4);
 	} else if (document.getElementById("resultat_omegar0_annexes").options[1].selected) {
 		sigma = (2 * Math.pow(Math.PI, 5) * Math.pow(k, 4)) / (15 * Math.pow(h, 3) * Math.pow(c, 2));
 		rho_r = (4 * sigma * Math.pow(t0, 4)) / (Math.pow(c, 3));
 		Or = (8 * Math.PI * G * rho_r) / (3 * Math.pow(H0parsec, 2));
-		Or = Or.toExponential();
+		Or = Or.toExponential(4);
 	} else {
 		Or = 0;
 	}
@@ -476,11 +476,11 @@ function calcu(path) {
 
 		let annots = [{xref: 'paper',
 		yref: 'paper',
-		x: 1,
+		x: 0.8,
 		xanchor: 'right',
 		y: 1,
 		yanchor: 'bottom',
-		text:'Tz1:'+Tz1+' Tz2:'+Tz2+ 'Hz1: '+Hz1+' Hz2: '+Hz2+' \Ω<sub>m</sub>z1: '+Omz1+' \Ω<sub>m</sub>z1: '+Omz2+' \Ω<sub>Λ</sub>z1: '+Olz1+' \Ω<sub>Λ</sub>z2: '+Olz2+' \Ω<sub>r</sub>z1: '+Orz1+' \Ω<sub>Λ</sub>z2: '+Orz2+' \Ω<sub>k</sub>z1: '+Okz1+' \Ω<sub>k</sub>z2: '+Okz2,
+		text:'T<sub>0</sub>: '+t0.toExponential(3)+'   H<sub>0</sub>:'+h0.toExponential(3)+ '   \Ω<sub>m0</sub>: '+omegam0.toExponential(3)+'   \Ω<sub>Λ0</sub>:  '+omegalambda0+'   \Ω<sub>r0</sub>: ' +Or+'  \Ω<sub>k0</sub>:   '+omegak0.toExponential(3),
 		showarrow: false}];
 		let val_graph = calculDeDs(abscissa_d);
 		let data = [
@@ -581,7 +581,7 @@ function calcu(path) {
 		xanchor: 'right',
 		y: 1,
 		yanchor: 'bottom',
-		text: '     Tz1: '+Tz1+'     Tz2: '+Tz2,
+		text:'T<sub>0</sub>: '+t0.toExponential(3)+'   H<sub>0</sub>:'+h0.toExponential(3)+ '   \Ω<sub>m0</sub>: '+omegam0.toExponential(3)+'   \Ω<sub>Λ0</sub>:  '+omegalambda0+'   \Ω<sub>r0</sub>: ' +Or+'  \Ω<sub>k0</sub>:   '+omegak0.toExponential(3),
 		showarrow: false}];
 		let val_graph = calcul_omegas(abscissa_omega);
 		let data = [
@@ -676,11 +676,11 @@ function calcu(path) {
 
 		let annots = [{xref: 'paper',
 		yref: 'paper',
-		x: 1,
+		x: 0.8,
 		xanchor: 'right',
 		y: 1,
 		yanchor: 'bottom',
-		text: 'Tz1:'+Tz1+' Tz2:'+Tz2+'Hz1: '+Hz1+' Hz2: '+Hz2+' \Ω<sub>m</sub>z1: '+Omz1+' \Ω<sub>m</sub>z1: '+Omz2+' \Ω<sub>Λ</sub>z1: '+Olz1+' \Ω<sub>Λ</sub>z2: '+Olz2+' \Ω<sub>r</sub>z1: '+Orz1+' \Ω<sub>Λ</sub>z2: '+Orz2+' \Ω<sub>k</sub>z1: '+Okz1+' \Ω<sub>k</sub>z2: '+Okz2,
+		text: 'T<sub>0</sub>: '+t0.toExponential(3)+'   H<sub>0</sub>:'+h0.toExponential(3)+ '   \Ω<sub>m0</sub>: '+omegam0.toExponential(3)+'   \Ω<sub>Λ0</sub>:  '+omegalambda0+'   \Ω<sub>r0</sub>: ' +Or+'  \Ω<sub>k0</sub>:   '+omegak0.toExponential(3),
 		showarrow: false}] ;
 		let val_graph = calcul_temps(abscissa_t);
 		let data = [
@@ -755,11 +755,11 @@ function calcu(path) {
 		let val_graph = calculDeDs(abscissa_d);
 		let annots =  [{xref: 'paper',
 		yref: 'paper',
-		x: 1,
+		x: 0.8,
 		xanchor: 'right',
 		y: 1,
 		yanchor: 'bottom',
-		text: 'Tz1:'+Tz1+' Tz2:'+Tz2+'Hz1: '+Hz1+' Hz2: '+Hz2+' \Ω<sub>m</sub>z1: '+Omz1+' \Ω<sub>m</sub>z1: '+Omz2+' \Ω<sub>Λ</sub>z1: '+Olz1+' \Ω<sub>Λ</sub>z2: '+Olz2+' \Ω<sub>r</sub>z1: '+Orz1+' \Ω<sub>Λ</sub>z2: '+Orz2+' \Ω<sub>k</sub>z1: '+Okz1+' \Ω<sub>k</sub>z2: '+Okz2,
+		text:'T<sub>0</sub>: '+t0.toExponential(3)+'   H<sub>0</sub>:'+h0.toExponential(3)+ '   \Ω<sub>m0</sub>: '+omegam0.toExponential(3)+'   \Ω<sub>Λ0</sub>:  '+omegalambda0+'   \Ω<sub>r0</sub>: ' +Or+'  \Ω<sub>k0</sub>:   '+omegak0.toExponential(3),
 		showarrow: false}];
 		let data = [
 			{
@@ -857,7 +857,7 @@ function calcu(path) {
 		xanchor: 'right',
 		y: 1,
 		yanchor: 'bottom',
-		text: '     Tz1: '+Tz1+'     Tz2: '+Tz2,
+		text:'T<sub>0</sub>: '+t0.toExponential(3)+'   H<sub>0</sub>:'+h0.toExponential(3)+ '   \Ω<sub>m0</sub>: '+omegam0.toExponential(3)+'   \Ω<sub>Λ0</sub>:  '+omegalambda0+'   \Ω<sub>r0</sub>: ' +Or+'  \Ω<sub>k0</sub>:   '+omegak0.toExponential(3),
 		showarrow: false}]
 		let data = [
 			{

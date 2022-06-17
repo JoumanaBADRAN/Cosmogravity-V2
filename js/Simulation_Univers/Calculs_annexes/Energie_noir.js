@@ -256,20 +256,27 @@ function calc_energie_noire() {
 
    //calcul de la distance du diametre apparent et distance lumiere(dm et photometrie)
   dda = dm1 / (1 + Number(z1));
+  dda=dda.toExponential(4);
+
   dl = dm1 * (1 + (z1));
+  dl=dl.toExponential(4);
 
   dda_2 = dm2 / (1+ Number(z2));
-  dl_2 = dm2 * (1+ Number(z2));
+  dda_2=dda_2.toExponential(4);
 
+  dl_2 = dm2 * (1+ Number(z2));
+  dl_2=dl_2.toExponential(4);
   
   
   Le = 4 * pi() * Ie;
+  Le=Le.toExponential(4);
 
- 
   Ee = Le / (4 * pi() * Math.pow(dl,2));
+  Ee=Ee.toExponential(4);
   
   Ee_2 = Le / (4* pi() * Math.pow(dl_2,2));
-
+  Ee_2=Ee_2.toExponential(4);
+ 
   Eps = Number(0.001);
 
 
@@ -297,22 +304,36 @@ function calc_energie_noire() {
 
   //En parsec 
   dm_pc = dm * 3.2407557442396 * Math.pow(10, -17);
+ 
 	dm1_pc = dm1 * 3.2407557442396 * Math.pow(10, -17);
+  
 	dm2_pc = dm2 * 3.2407557442396 * Math.pow(10, -17);
+  
 	da_pc = dda * 3.2407557442396 * Math.pow(10, -17);
+  da_pc =da_pc .toExponential(4);
 	dl_pc = dl * 3.2407557442396 * Math.pow(10, -17);
+  dl_pc =	dl_pc .toExponential(4);
 	da2_pc = dda_2 * 3.2407557442396 * Math.pow(10, -17);
+  da2_pc=da2_pc.toExponential(4);
 	dl2_pc = dl_2 * 3.2407557442396 * Math.pow(10, -17);
+  dl2_pc=dl2_pc.toExponential(4);
 
   //annÃ©es lumiÃ¨re
   lumie = 9460730472580800;
   dm1_lum = (dm1 / lumie);
+  
   dm2_lum = (dm2 / lumie);
+  
   dif_lum = (dm / lumie);
+ 
   da_lum = (dda / lumie);
+  da_lum=da_lum.toExponential(4);
 	dl_lum = (dl / lumie);
+  dl_lum=dl_lum.toExponential(4);
 	da2_lum = (dda_2 / lumie);
+  da2_lum=da2_lum.toExponential(4);
 	dl2_lum = (dl_2 / lumie);
+  dl2_lum=dl2_lum.toExponential(4);
 
   arr.push(dm1, dm2, dm, dm1_pc, dm2_pc, dm_pc,da_pc, dl_pc, dm1_lum, dm2_lum, dif_lum, da_lum, dl_lum, tempsEmission, tempsReception, agebetween, tempsEmission_sec, tempsReception_sec, agebetween_sec);
 
