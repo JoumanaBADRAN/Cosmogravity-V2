@@ -449,6 +449,7 @@ function initialisation(compteur){
 	tempsEvaporation_trouNoir = 6.6e74*((M/M_soleil)**3); 		//en secondes
 	document.getElementById("tempsEvapTN").innerHTML=tempsEvaporation_trouNoir.toExponential(5);
 
+	return mobile;
 }  // fin fonction initialisation
 
 
@@ -1145,7 +1146,7 @@ function calcul_rmax(L,E,vr,r0,rmax1ou2){
     }
 	else if ( (L <= 4*m) && (L > 2*Math.sqrt(3)*m) ) {
 		// dans ce cas, r varie entre 2 valeurs r0 et r3
-			if ( (Vr_mob(r0,E,L) <= Vr_mob(r1,E,L)) && (r0 > r1) ) {
+			if ( (Vr(r0) <= Vr(r1)) && (r0 > r1) ) {
 				if (r3 > r0) {
 					rmax = r3;
 				}
