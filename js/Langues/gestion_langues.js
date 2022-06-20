@@ -689,6 +689,7 @@ function texteTrajectoireMassiveKerr() {
 	document.getElementById("r2").innerHTML = texte.pages_trajectoire.trajectoire_simple;
 	document.getElementById("r3").innerHTML = texte.pages_trajectoire.observateur;
 	document.getElementById("r4").innerHTML = texte.pages_trajectoire.mobile; 
+	document.getElementById("boutton_prézoom").innerHTML = texte.pages_trajectoire.boutton_prézoom;
 	document.getElementById("temps_ecoule").innerHTML = texte.pages_trajectoire.temps_ecoule;
 	document.getElementById("acceleration").innerHTML = texte.pages_trajectoire.acceleration;
 	document.getElementById("temps_obs").innerHTML = texte.pages_trajectoire.temps_obs;
@@ -735,6 +736,7 @@ function texteTrajectoirePhotonKerr() {
 	document.getElementById("r2").innerHTML = texte.pages_trajectoire.trajectoire_simple;
 	document.getElementById("r3").innerHTML = texte.pages_trajectoire.observateur;
 	document.getElementById("r4").innerHTML = texte.pages_trajectoire.photon;
+	document.getElementById("boutton_prézoom").innerHTML = texte.pages_trajectoire.boutton_prézoom;
 	document.getElementById("acceleration").innerHTML = texte.pages_trajectoire.acceleration;
 	document.getElementById("temps_ecoule").innerHTML = texte.pages_trajectoire.temps_ecoule;
 	document.getElementById("temps_obs").innerHTML = texte.pages_trajectoire.temps_obs;

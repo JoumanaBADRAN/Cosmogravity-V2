@@ -19,6 +19,7 @@ var mini_mob=0;
 var obs=0;
 var z=0;
 var z_obs=0;
+var input=0;//si on entre rien dans l'entrée nzoom 
 
 //puisqu'il faux initaliser data1 et data2 avant l'appel dans graphique_creation_pot
 var data1 = [];
@@ -68,6 +69,12 @@ function initialisation(){
 	phi0=Number(document.getElementById("phi0").value);  // angle de départ
 	phi0=phi0*Math.PI/180;
 
+	nzoom =Number(document.getElementById("nzoom").value);
+	var boutonElement = document.getElementById("prézoom");
+	boutonElement.addEventListener("click",  function() {//si on clique sur la bouton prézoom on affecte à le nombre input la valeur entrée en nzoom
+		input = nzoom
+		});
+
 	J = Number(document.getElementById("J").value);
 	a = J / (c * M);
 	m = G * M / Math.pow(c, 2); //moitié du rayon de Schwarzchild
@@ -80,7 +87,7 @@ function initialisation(){
 	rh = G * M / Math.pow(c, 2) * (1 + Math.sqrt(1 - Math.pow(J * c / (G * M * M), 2))); //rayon de Kerr
 	rhp = 0.5 * ( (2 * G * M / Math.pow(c, 2)) + Math.sqrt(Math.pow( (2 * G * M / Math.pow(c, 2)), 2) - 4 * Math.pow( (J / (c * M)) , 2)));     //RH+
 	rhm = 0.5 * ( (2 * G * M / Math.pow(c, 2)) - Math.sqrt(Math.pow( (2 * G * M / Math.pow(c, 2)), 2) - 4 * Math.pow( (J / (c * M)) , 2)));     //RH-
-	gravSurface = 0.5 * Math.pow(c, 2) * (Math.pow(rhp, 2) - Math.pow(a, 2)) / (Math.pow(rhp, 2) + Math.pow(a, 2)); 			//gravité de surface Kerr
+	gravSurface = 0.5 * Math.pow(c, 2) * (Math.pow(rhp, 2) - Math.pow(a, 2)) / (Math.pow(rhp, 2) + Math.pow(a, 2))*rhp; 			//gravité de surface Kerr
 	
 	E = (vr * vr * (r0 - rs) * Math.pow(r0, 3) + Math.pow(delta(r0), 2) * vphi * vphi) / (delta(r0) * Math.pow(c * r0, 2));
 	E=Math.sqrt(Math.abs(E));
@@ -107,6 +114,13 @@ function verifnbr() {
 	vr = document.getElementById("teta").value;
 	M = document.getElementById("M").value;
 	J = document.getElementById("J").value;
+
+	nzoom =Number(document.getElementById("nzoom").value);
+	var boutonElement = document.getElementById("prézoom");
+	boutonElement.addEventListener("click",  function() {
+		input = nzoom
+		console.log(input);
+		 });
 
 	if (isNaN(r0)){
 		alert ("Veuillez vérifier vos saisie en r0");}
@@ -276,6 +290,24 @@ function trajectoire() {
           	dtau /= 2;
 	        clicks -= 1 ;  }
     }, false);
+
+	if(Number.isInteger(input)){
+		if(input>0){
+		scale_factor*= math.pow(1.2,input);	
+		posX1 = scale_factor * r_part * (Math.cos(phi) / rmax) + (canvas.width / 2);
+		posY1 = scale_factor * r_part * (Math.sin(phi) / rmax) + (canvas.height / 2);
+		posX2 = scale_factor * r_part_obs * (Math.cos(phi_obs) / rmax) + (canvas.width / 2);
+		posY2 = scale_factor * r_part_obs * (Math.sin(phi_obs) / rmax) + (canvas.height / 2);
+		console.log(scale_factor)
+	}
+		else{
+		scale_factor/=math.pow(1.2,-input);	;
+		posX1 = scale_factor * r_part * (Math.cos(phi) / rmax) + (canvas.width / 2);
+		posY1 = scale_factor * r_part * (Math.sin(phi) / rmax) + (canvas.height / 2);
+		posX2 = scale_factor * r_part_obs * (Math.cos(phi_obs) / rmax) + (canvas.width / 2);
+		posY2 = scale_factor * r_part_obs * (Math.sin(phi_obs) / rmax) + (canvas.height / 2);
+		console.log(scale_factor);
+		}}
 
     document.getElementById('moinszoom').addEventListener('click', function() {
         scale_factor /= 1.2;

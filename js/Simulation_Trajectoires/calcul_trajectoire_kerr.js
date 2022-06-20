@@ -17,6 +17,7 @@ const DIAMETRE_PART = 1;
 var scale_factor=280;
 var z=0;
 var z_obs=0;
+var input=0;
 
 //puisqu'il faux initaliser data1 et data2 avant l'appel dans graphique_creation_pot
 var data1 = [];
@@ -63,7 +64,13 @@ function initialisation(){
 	teta = Number(document.getElementById("teta").value);
 	phi0=Number(document.getElementById("phi0").value);
 	phi0=phi0*Math.PI/180;
-	
+
+	nzoom =Number(document.getElementById("nzoom").value);
+	var boutonElement = document.getElementById("boutton_prézoom");
+	boutonElement.addEventListener("click",  function() {
+		input = nzoom
+		});
+
 	if(v0>c){
 		alert("V0 supérieur à c");
 		return;
@@ -83,7 +90,7 @@ function initialisation(){
 	rh = G * M / Math.pow(c, 2) * (1 + Math.sqrt(1 - Math.pow(J * c / (G * M * M), 2))); //rayon de Kerr
 	rhp = 0.5 * ( (2 * G * M / Math.pow(c, 2)) + Math.sqrt(Math.pow( (2 * G * M / Math.pow(c, 2)), 2) - 4 * Math.pow( (J / (c * M)) , 2)));     //RH+
     rhm = 0.5 * ( (2 * G * M / Math.pow(c, 2)) - Math.sqrt(Math.pow( (2 * G * M / Math.pow(c, 2)), 2) - 4 * Math.pow( (J / (c * M)) , 2)));     //RH-
-	gravSurface = 0.5 * Math.pow(c, 2) * (Math.pow(rhp, 2) - Math.pow(a, 2)) / (Math.pow(rhp, 2) + Math.pow(a, 2)); 			//gravité de surface Kerr
+	gravSurface = 0.5 * Math.pow(c, 2) * (Math.pow(rhp, 2) - Math.pow(a, 2)) / (Math.pow(rhp, 2) + Math.pow(a, 2))*rhp; 			//gravité de surface Kerr
 
 	textegravetetc_Kerr();						   
 	document.getElementById("a").innerHTML = a.toExponential(3);
@@ -300,6 +307,24 @@ function trajectoire() {
 		}
 														// fin du while, réserve d'énergie finie = plus possible de piloter
 		}, 50);
+
+		if(Number.isInteger(input)){
+			if(input>0){
+			scale_factor*= math.pow(1.2,input);	
+			posX1 = scale_factor * r_part * (Math.cos(phi) / rmax) + (canvas.width / 2);
+			posY1 = scale_factor * r_part * (Math.sin(phi) / rmax) + (canvas.height / 2);
+			posX2 = scale_factor * r_part_obs * (Math.cos(phi_obs) / rmax) + (canvas.width / 2);
+			posY2 = scale_factor * r_part_obs * (Math.sin(phi_obs) / rmax) + (canvas.height / 2);
+			console.log(scale_factor)
+		}
+			else{
+			scale_factor/=math.pow(1.2,-input);	;
+			posX1 = scale_factor * r_part * (Math.cos(phi) / rmax) + (canvas.width / 2);
+			posY1 = scale_factor * r_part * (Math.sin(phi) / rmax) + (canvas.height / 2);
+			posX2 = scale_factor * r_part_obs * (Math.cos(phi_obs) / rmax) + (canvas.width / 2);
+			posY2 = scale_factor * r_part_obs * (Math.sin(phi_obs) / rmax) + (canvas.height / 2);
+			console.log(scale_factor);
+			}}
 
 
 	//Gestion des bouttons accélerer et decélerer																 

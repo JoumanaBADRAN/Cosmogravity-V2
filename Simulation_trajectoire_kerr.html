@@ -176,6 +176,10 @@
 				<label  id="thetalabel" title="" for=""> &alpha;° = </label>
 				<input id="teta" value="90" maxlength="10" type="text" size="10" onChange="verifnbr();initialisation()">
 			</span>
+			<span id="vitesse2">
+				<label id= "massetxt" for="nzoom">nzoom =</label>
+				<input id="nzoom" value=" " maxlength="10" type="text" size="10" onChange="initialisation();verifnbr()">
+			</span>
 		
             <span id="case">
                 <label  id="labelgp" for="teta"></label>
@@ -207,6 +211,9 @@
 			<span id="recup">
 					<button id="boutton_recup" type="button" class="myButton" onclick="load_kerr_massif();initialisation();"></button>
 			</span>
+			<span id="prézoom">
+				<button id="boutton_prézoom" type="button" class="myButton" onclick="verifnbr();initialisation();"></button>
+		    </span>
 
 			<!--<span id="rrrrrrrrrrr">
 				Boutton pour basculer sur les pages en grand plus nésaire mais conserver au cas ou
@@ -228,7 +235,7 @@
 					<th class="tg-aicv" id="spin" title="" >$a=\frac{J}{cM}(m)$</th>
 					<th class="tg-aicv" id="horizon1" >$Rh+(m)$</th>
 					<th class="tg-aicv" id="horizon2">$Rh-(m)$</th>
-					<th class="tg-aicv" id="gravSurface">$g=\frac{1}{2}c^{2}\frac{(Rh+^{2}-a^{2})}{(Rh+^{2}+a^{2})}(m.s^{-2})$</th>
+					<th class="tg-aicv" id="gravSurface">$g=\frac{1}{2}c^{2}\frac{(Rh+^{2}-a^{2})}{(Rh+^{2}+a^{2})Rh+}(m.s^{-2})$</th>
 				</tr>
 				<tr>
 					<td class="tg-3ozo" id="L">0</td>

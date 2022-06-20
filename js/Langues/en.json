@@ -227,6 +227,7 @@
 	"bouton_pause":"Pause",
 	"bouton_lecture":"Play",
 	"bouton_start":"Start",
+	"boutton_prézoom":"Pre-zoom",
 	"bouton_reset":"Reset",
 	"bouton_enregistrer":"Save",
 	"trajectoire_complete":"Complete trajectory",
